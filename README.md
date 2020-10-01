@@ -55,7 +55,7 @@ Specify the number of clusters for each confident cell types:
 Run SECANT:
 
     device = get_device()
-    outLbl00, conMtxFinal0, tauVecFinal0, muMtxFinal0, cov3DFinal0, loglikFinal0 = runOne1(data0, numCluster, K, cls_np_0, uncertain = True, learning_rate=0.01, nIter=100, init_seed = 1)
+    outLbl00, conMtxFinal0, tauVecFinal0, muMtxFinal0, cov3DFinal0, loglikFinal0 = SECANT_CITE(data0, numCluster, K, cls_np_0, uncertain = True, learning_rate=0.01, nIter=100, init_seed = 1)
 
 Get the ARI or AMI:
 
@@ -89,10 +89,10 @@ Check UMAP plot (ADT label)
     legend0 = plt.legend(handles=scatter0.legend_elements()[0],labels=mylabel,loc="upper right", title="Cell Type (ADT)",bbox_to_anchor=(1.35, 1))
 
 
-## Function: runOne1
+## Function: SECANT_CITE
 
 ### Usage
-runOne1(data0, numCluster, K, cls_np, uncertain = True, learning_rate=0.01, nIter=100, init_seed=2020)
+SECANT_CITE(data0, numCluster, K, cls_np, uncertain = True, learning_rate=0.01, nIter=100, init_seed=2020)
 
 ### Arguments
 * *data0* :	tensor of the RNA-seq dataset from CITE-seq.
@@ -114,10 +114,10 @@ runOne1(data0, numCluster, K, cls_np, uncertain = True, learning_rate=0.01, nIte
 * *loglikFinal0* : the log likelihood
 
 
-## Function: runOne2
+## Function: SECANT_joint
 
 ### Usage
-runOne2(data0, data1, numCluster, K, cls_np, uncertain = True, learning_rate=0.01, nIter=100, init_seed=2020)
+SECANT_joint(data0, data1, numCluster, K, cls_np, uncertain = True, learning_rate=0.01, nIter=100, init_seed=2020)
 
 ### Arguments
 * *data0* :	tensor of the RNA-seq dataset from CITE-seq.

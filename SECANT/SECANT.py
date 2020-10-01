@@ -18,11 +18,7 @@ import umap
 import matplotlib
 
 
-if torch.cuda.is_available():  
-  dev = "cuda:0" 
-else:  
-  dev = "cpu"  
-device = torch.device(dev) 
+
 
 # determine the supported device
 def get_device():
@@ -198,7 +194,7 @@ def optimDL1(parameters, data0, conMtx_temp, C, K, P, N, cls_np, learning_rate, 
     return conMtx_tran, tauVec_tran, muMtx, cov3D_tran, -NLL
 
 # Final function to run algorithm for one dataset case
-def runOne1(data0, numCluster, K, cls_np, uncertain = True, learning_rate=0.01, nIter=100, init_seed=2020):
+def SECANT_CITE(data0, numCluster, K, cls_np, uncertain = True, learning_rate=0.01, nIter=100, init_seed=2020):
     torch.manual_seed(init_seed)
     
     N = data0.size()[0]
@@ -292,7 +288,7 @@ def optimDL2(parameters, data0, data1, conMtx_temp, C, K, P, N0, N1, cls_np, lea
     return conMtx_tran, tauVec_tran0, tauVec_tran1, muMtx, cov3D_tran, -NLL
 
 # Final function to run algorithm for one dataset case
-def runOne2(data0, data1, numCluster, K, cls_np, uncertain = True, learning_rate=0.01, nIter=100, init_seed=2020):
+def SECANT_joint(data0, data1, numCluster, K, cls_np, uncertain = True, learning_rate=0.01, nIter=100, init_seed=2020):
     torch.manual_seed(init_seed)
     
     N0 = data0.size()[0]

@@ -2,7 +2,13 @@
 
 SECANT is a biology-guided SEmi-supervised method for Clustering, classification, and ANnoTation of single-cell multi-omics. 
 
-SECANT can be used to analyze CITE-seq data, or jointly analyze CITE-seq and scRNA-seq data. The novelties of SECANT include 1) using confident cell type labels identified from surface protein data as guidance for cell clustering, 2) providing general annotation of confident cell types for each cell cluster, 3) fully utilizing cells with uncertain or missing cell type labels to increase performance, and 4) accurate prediction of confident cell types identified from surface protein data for scRNA-seq data. Besides, as a model-based approach, SECANT can quantify the uncertainty of the results, and our framework can be easily extended to handle other types of multi-omics data. 
+SECANT can be used to analyze CITE-seq data, or jointly analyze CITE-seq and scRNA-seq data. The novelties of SECANT include 
+- 1) using confident cell type labels identified from surface protein data as guidance for cell clustering
+- 2) providing general annotation of confident cell types for each cell cluster 
+- 3) fully utilizing cells with uncertain or missing cell type labels to increase performance
+- 4) accurate prediction of confident cell types identified from surface protein data for scRNA-seq data
+- 5) quantify the uncertainty of the results
+
 
 Reference: 
 - Paper: 

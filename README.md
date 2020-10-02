@@ -7,7 +7,7 @@ SECANT can be used to analyze CITE-seq data, or jointly analyze CITE-seq and scR
 - 2) providing general annotation of confident cell types for each cell cluster 
 - 3) fully utilizing cells with uncertain or missing cell type labels to increase performance
 - 4) accurate prediction of confident cell types identified from surface protein data for scRNA-seq data
-- 5) quantify the uncertainty of the results
+
 
 
 Reference: 

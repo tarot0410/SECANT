@@ -42,7 +42,7 @@ Read in the datasets:
     clusterLbl_np_0 = pd.read_csv("./simulated_data/clusterLbl_np_0.csv",header=None,squeeze=True)
     clusterLbl_np_1 = pd.read_csv("./simulated_data/clusterLbl_np_1.csv",header=None,squeeze=True)
 
-Here, data0 can be viewed as the RNA-seq data from CITE-seq, and data1 can be viewed as the optional single cell RNA-seq data. cls_np_0 is the xxx, and cls_np is the xxxxx. clusterLbl_np_0 is xxxx.
+Here, data0 can be viewed as the RNA-seq data from CITE-seq, and data1 can be viewed as the optional single cell RNA-seq data. cls_np_0 is the xxx, and cls_np is the xxxxx. clusterLbl_np_0 is the true label xxxxxx.
 
 Next, convert the datasets format for SECANT:
 
@@ -103,7 +103,7 @@ SECANT_CITE(data0, numCluster, K, cls_np, uncertain = True, learning_rate=0.01, 
 ### Arguments
 * *data0* :	tensor of the RNA-seq dataset from CITE-seq.
 * *numCluster* :	a list of number of clusters for each confidence cell types.
-* *K* : number of cluster. 
+* *K* : total number of cluster. 
 * *cls_np* :	a numpy array of 
 * *uncertain* :	wheter to add the uncertain type, the default is true.
 * *learning_rate* :	the learning rate for SGD, the default is 0.01 
@@ -114,7 +114,7 @@ SECANT_CITE(data0, numCluster, K, cls_np, uncertain = True, learning_rate=0.01, 
 ### Values
 * *outLbl00* : the cluster label
 * *conMtxFinal0* : the concordance matrix
-* *tauVecFinal0* : the posterior probability
+* *tauVecFinal0* : the proportion of each cluster
 * *muMtxFinal0* : mean vector for the multivariste Guassian distribution
 * *cov3DFinal0* : covaraince matrix for the multivariate Guassian distribution
 * *loglikFinal0* : the log likelihood
@@ -129,7 +129,7 @@ SECANT_joint(data0, data1, numCluster, K, cls_np, uncertain = True, learning_rat
 * *data0* :	tensor of the RNA-seq dataset from CITE-seq.
 * *data1* :	tensor of the single cell RNA-seq dataset.
 * *numCluster* :	a list of number of clusters for each confidence cell types.
-* *K* : total number of configrations. 
+* *K* : total number of clusters. 
 * *cls_np* :	a numpy array of 
 * *uncertain* :	wheter to add the uncertain type, the default is true.
 * *learning_rate* :	the learning rate for SGD, the default is 0.01 
@@ -142,8 +142,8 @@ SECANT_joint(data0, data1, numCluster, K, cls_np, uncertain = True, learning_rat
 * *outLbl11* : the cluster label for scRNA-seq data
 * *preditADTMtx* : the predicated ADT label for the scRNA-seq data
 * *conMtxFinal1* : the concordance matrix
-* *tauVecFinal0_1* : the posterior probability for RNA-seq data
-* *tauVecFinal1_1* : the posterior probability for scRNA-seq data
+* *tauVecFinal0_1* : the proportion of cluster in RNA data from CITE-seq
+* *tauVecFinal1_1* : the proportion of cluster in scRNA-seq 
 * *muMtxFinal1* : mean vector for the multivariste Guassian distribution
 * *cov3DFinal1* : covaraince matrix for the multivariate Guassian distribution
 * *loglikFinal1* : the log likelihood

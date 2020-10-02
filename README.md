@@ -103,7 +103,7 @@ SECANT_CITE(data0, numCluster, K, cls_np, uncertain = True, learning_rate=0.01, 
 ### Arguments
 * *data0* :	tensor of the RNA-seq dataset from CITE-seq.
 * *numCluster* :	a list of number of clusters for each confidence cell types.
-* *K* : total number of configrations. 
+* *K* : number of cluster. 
 * *cls_np* :	a numpy array of 
 * *uncertain* :	wheter to add the uncertain type, the default is true.
 * *learning_rate* :	the learning rate for SGD, the default is 0.01 

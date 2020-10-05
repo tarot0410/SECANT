@@ -9,9 +9,7 @@ SECANT can be used to analyze CITE-seq data, or jointly analyze CITE-seq and scR
 - 4) accurate prediction of confident cell types identified from surface protein data for scRNA-seq data
 
 
-
-Reference: 
-- Paper: 
+Paper: will be released soon
 
 ## Installation:
 
@@ -34,15 +32,20 @@ First, import the pacakge:
     from SECANT import *
 
 Read in the datasets:
-
+    
+    # Input 1
     data0 = pd.read_csv("./simulated_data/data0.csv",header=None)
-    data1 = pd.read_csv("./simulated_data/data1.csv",header=None)
+    # Input 2
     cls_np_0 = pd.read_csv("./simulated_data/cls_np_0.csv",header=None,squeeze=True)
+    # Optional input (for joint analysis)
+    data1 = pd.read_csv("./simulated_data/data1.csv",header=None)
+    
+    # Simulated truth data used to assess performance (not used as input)
     cls_np_1 = pd.read_csv("./simulated_data/cls_np_1.csv",header=None,squeeze=True)
     clusterLbl_np_0 = pd.read_csv("./simulated_data/clusterLbl_np_0.csv",header=None,squeeze=True)
     clusterLbl_np_1 = pd.read_csv("./simulated_data/clusterLbl_np_1.csv",header=None,squeeze=True)
 
-Here, data0 can be viewed as the RNA-seq data from CITE-seq, and data1 can be viewed as the optional single cell RNA-seq data. cls_np_0 is the xxx, and cls_np is the xxxxx. clusterLbl_np_0 is the true label xxxxxx.
+Here, for input data, data0 can be viewed as the RNA data from CITE-seq, data1 can be viewed as the optional RNA data from scRNA-seq, and cls_np_0 can be viewed as the confident cell types label from ADT data. For datasets used to assess method performance, cls_np_1 is the simulated confident cell types for scRNA-seq data, clusterLbl_np_0 is the true cluster labels for data from CITE-seq, and clusterLbl_np_1 is the true cluster labels for data from scRNA-seq.
 
 Next, convert the datasets format for SECANT:
 
@@ -58,9 +61,12 @@ Specify the number of clusters for each confident cell types:
     numCluster = [1,2,2,3] 
     K = sum(numCluster)
     
-Run SECANT:
+Here, 1 in numCluster stands for 1 cluster for confident cell type 1, 2 for 2 clusters for type 2 and 3, and 3 for 3 clusters for type 4.
+The total number of clusters therefore is 8.
+    
+Run SECANT (for analyzing CITE-seq data only):
 
-    device = get_device()
+    device = get_device() # use GPU if available
     outLbl00, conMtxFinal0, tauVecFinal0, muMtxFinal0, cov3DFinal0, loglikFinal0 = SECANT_CITE(data0, numCluster, K, cls_np_0, uncertain = True, learning_rate=0.01, nIter=100, init_seed = 1)
 
 Get the ARI or AMI:
@@ -97,55 +103,59 @@ Check UMAP plot (ADT label)
 
 ## Function: SECANT_CITE
 
+SECANT_CITE is used for surface protein-guided cell clustering and cluster annotation for CITE-seq data.
+
 ### Usage
 SECANT_CITE(data0, numCluster, K, cls_np, uncertain = True, learning_rate=0.01, nIter=100, init_seed=2020)
 
 ### Arguments
-* *data0* :	tensor of the RNA-seq dataset from CITE-seq.
-* *numCluster* :	a list of number of clusters for each confidence cell types.
-* *K* : total number of cluster. 
-* *cls_np* :	a numpy array of 
-* *uncertain* :	wheter to add the uncertain type, the default is true.
+* *data0* :	tensor of the RNA data from CITE-seq.
+* *numCluster* :	a list of number of clusters for each confidence cell type.
+* *K* : total number of clusters. 
+* *cls_np* :	a numpy array of confident cell type labels built from ADT data. Each value is expected to be an integer, where the last category refers to the "uncertain" type if used.
+* *uncertain* :	whether the uncertain cell type is shown in *cls_np*, the default is true.
 * *learning_rate* :	the learning rate for SGD, the default is 0.01 
 * *nIter* :	the max iteration for optimazation, the default is 100.
 * *init_seed* :	the initial seed.
 
 
 ### Values
-* *outLbl00* : the cluster label
+* *outLbl00* : the final cluster label
 * *conMtxFinal0* : the concordance matrix
 * *tauVecFinal0* : the proportion of each cluster
-* *muMtxFinal0* : mean vector for the multivariste Guassian distribution
-* *cov3DFinal0* : covaraince matrix for the multivariate Guassian distribution
-* *loglikFinal0* : the log likelihood
+* *muMtxFinal0* : cluster-specific mean vector for the multivariste Guassian distribution
+* *cov3DFinal0* : cluster-specific covaraince matrix for the multivariate Guassian distribution
+* *loglikFinal0* : the final log-likelihood
 
 
 ## Function: SECANT_joint
+
+SECANT_joint is used for surface protein-guided cell clustering, cluster annotation and confident cell type prediction for jointly analyzing CITE-seq and scRNA-seq data.
 
 ### Usage
 SECANT_joint(data0, data1, numCluster, K, cls_np, uncertain = True, learning_rate=0.01, nIter=100, init_seed=2020)
 
 ### Arguments
-* *data0* :	tensor of the RNA-seq dataset from CITE-seq.
-* *data1* :	tensor of the single cell RNA-seq dataset.
+* *data0* :	tensor of the RNA data from CITE-seq.
+* *data1* :	tensor of the RNA data from scRNA-seq.
 * *numCluster* :	a list of number of clusters for each confidence cell types.
 * *K* : total number of clusters. 
-* *cls_np* :	a numpy array of 
-* *uncertain* :	wheter to add the uncertain type, the default is true.
+* *cls_np* :	a numpy array of confident cell type labels built from ADT data (CITE-seq). Each value is expected to be an integer, where the last category refers to the "uncertain" type if used.
+* *uncertain* :	whether the uncertain cell type is shown in *cls_np*, the default is true.
 * *learning_rate* :	the learning rate for SGD, the default is 0.01 
 * *nIter* :	the max iteration for optimazation, the default is 100.
 * *init_seed* :	the initial seed.
 
 
 ### Values
-* *outLbl01* : the cluster label for RNA-seq data
-* *outLbl11* : the cluster label for scRNA-seq data
-* *preditADTMtx* : the predicated ADT label for the scRNA-seq data
+* *outLbl01* : the final cluster label for CITE-seq data
+* *outLbl11* : the final cluster label for scRNA-seq data
+* *preditADTMtx* : the predicated ADT label for scRNA-seq data
 * *conMtxFinal1* : the concordance matrix
-* *tauVecFinal0_1* : the proportion of cluster in RNA data from CITE-seq
-* *tauVecFinal1_1* : the proportion of cluster in scRNA-seq 
-* *muMtxFinal1* : mean vector for the multivariste Guassian distribution
-* *cov3DFinal1* : covaraince matrix for the multivariate Guassian distribution
-* *loglikFinal1* : the log likelihood
+* *tauVecFinal0_1* : the proportion of clusters in CITE-seq data
+* *tauVecFinal1_1* : the proportion of clusters in scRNA-seq data
+* *muMtxFinal1* : cluster-specific mean vector for the multivariste Guassian distribution
+* *cov3DFinal1* : cluster-specific covaraince matrix for the multivariate Guassian distribution
+* *loglikFinal1* : the final log-likelihood
 
 

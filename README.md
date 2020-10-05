@@ -1,4 +1,4 @@
-# SECANT (beta, a more detailed version along with paper will come soon)
+# SECANT (Beta, a more detailed version along with paper will come soon)
 
 SECANT is a biology-guided SEmi-supervised method for Clustering, classification, and ANnoTation of single-cell multi-omics. 
 

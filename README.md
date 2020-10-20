@@ -125,6 +125,8 @@ Check UMAP plot (colored by clustering results from SECANT)
 	mylabel=('1', '2', '3', '4', '5' ,'6', '7', '8')
 	legend1 = plt.legend(handles=scatter1.legend_elements()[0],labels=mylabel,loc="upper right", title="Clusters",bbox_to_anchor=(1.35, 1))
 
+![plot2](https://user-images.githubusercontent.com/50209236/96532552-1db9bb00-125a-11eb-955c-52d0c376ba76.png)
+
 ## Function: SECANT_CITE
 
 SECANT_CITE is used for surface protein-guided cell clustering and cluster annotation for CITE-seq data.

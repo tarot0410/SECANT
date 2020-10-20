@@ -114,6 +114,8 @@ Check UMAP plot (colored by ADT label)
     mylabel=('Type 1', 'Type 2', 'Type 3','Type 4','Uncertain')
     legend0 = plt.legend(handles=scatter0.legend_elements()[0],labels=mylabel,loc="upper right", title="Cell Type (ADT)",bbox_to_anchor=(1.35, 1))
 
+![plot1](https://user-images.githubusercontent.com/50209236/96532447-efd47680-1259-11eb-8518-c71c5c9d6758.png)
+
 Check UMAP plot (colored by clustering results from SECANT)
 
 	scatter1 = plt.scatter(embedding0[:, 0],

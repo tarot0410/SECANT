@@ -36,16 +36,20 @@ Read in the datasets:
     ### Input data for SECANT
     # Input 1 (RNA data from CITE-seq after dimension reduction, cell*feature)
     data0 = pd.read_csv("./simulated_data/data0.csv",header=None)
+    
     # Input 2 (ADT cell type label, integer from 0 to C, where C refers to uncertain cell type if it appears)
     cls_np_0 = pd.read_csv("./simulated_data/cls_np_0.csv",header=None,squeeze=True)
+    
     # Optional input (aditional RNA data from scRNA-seq, similar to Input 1, for joint analysis)
     data1 = pd.read_csv("./simulated_data/data1.csv",header=None)
     
     ### Simulated truth data used to assess performance (not used as input)
     # true cell cluster label for RNA data from CITE-seq
     clusterLbl_np_0 = pd.read_csv("./simulated_data/clusterLbl_np_0.csv",header=None,squeeze=True)
+    
     # true ADT cell type label for the additional RNA data (optional, for joint analysis)
     cls_np_1 = pd.read_csv("./simulated_data/cls_np_1.csv",header=None,squeeze=True)
+    
     # true cell cluster label for the additional RNA data (optional, for joint analysis)
     clusterLbl_np_1 = pd.read_csv("./simulated_data/clusterLbl_np_1.csv",header=None,squeeze=True)
 
@@ -66,7 +70,7 @@ Check cross table for correspondance of simulated ADT cell type and RNA cell clu
 
 ![plot0](https://user-images.githubusercontent.com/50209236/96535220-5314d780-125f-11eb-80aa-24458fcea842.png)
 
-In this simulated data, there are 3 confident ADT cell types (label 0-3), and ADT label 4 refers to uncertain cell type (proportion set to be 20%). Further, there is 1 cluster for confident cell type 0, 2 clusters for type 1 and 2, and 3 clusters for type 3. The total number of clusters therefore is 8. The cluster proportions are set to be (0.1, 0.1, 0.2, 0.2, 0.2, 0.05, 0.05, 0.1). Cluster-specific parameters are estimated from real data.
+In this simulated data, there are 3 confident ADT cell types (label 0-3), and ADT label 4 refers to uncertain cell type (proportion set to be 20%). Further, there is 1 cluster for confident cell type 0, 2 clusters for type 1 and 2, and 3 clusters for type 3. The total number of clusters is 8. The cluster proportions are set to be (0.1, 0.1, 0.2, 0.2, 0.2, 0.05, 0.05, 0.1). Cluster-specific parameters are estimated from real data.
 
 Construct UMAP plot for visualization
 
@@ -103,12 +107,12 @@ First specify the number of clusters for each confident cell types:
     numCluster = [1,2,2,3] 
     K = sum(numCluster)
     
-Here, 1 in numCluster stands for 1 cluster for confident cell type 0, 2 for 2 clusters for type 1 and 2, and 3 for 3 clusters for type 3.
+Here, 1 in numCluster stands for 1 cluster for confident cell type 0, 2 for 2 clusters for type 1 and 2, and 3 for 3 clusters for type 3. Therefore, the total number of clusters is 8.
 
 Now run SECANT
     
     device = get_device() # use GPU if available
-    outLbl, conMtxFinal0, tauVecFinal0, muMtxFinal0, cov3DFinal0, loglikFinal0 = runOne1(data0, numCluster, K, cls_np_0, uncertain = True, learning_rate=0.01, nIter=100, init_seed = 1)
+    outLbl, conMtxFinal0, tauVecFinal0, muMtxFinal0, cov3DFinal0, loglikFinal0 = SECANT_CITE(data0, numCluster, K, cls_np_0, uncertain = True, learning_rate=0.01, nIter=100, init_seed = 1)
 
 Compute ARI and AMI for clustering performance:
 

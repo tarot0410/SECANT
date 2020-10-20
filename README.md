@@ -25,7 +25,7 @@ Download a local copy of SECANT and install from the directory:
 
 Torch, sklearn, umap and all of their respective dependencies. 
 
-## Example 
+## Example (using simulated data)
 
 First, import the pacakge:
 
@@ -33,16 +33,20 @@ First, import the pacakge:
 
 Read in the datasets:
     
-    # Input 1
+    ### Input data for SECANT
+    # Input 1 (RNA data from CITE-seq after dimension reduction, cell*feature)
     data0 = pd.read_csv("./simulated_data/data0.csv",header=None)
-    # Input 2
+    # Input 2 (ADT cell type label, integer from 0 to C, where C refers to uncertain cell type if it appears)
     cls_np_0 = pd.read_csv("./simulated_data/cls_np_0.csv",header=None,squeeze=True)
-    # Optional input (for joint analysis)
+    # Optional input (aditional RNA data from scRNA-seq, similar to Input 1, for joint analysis)
     data1 = pd.read_csv("./simulated_data/data1.csv",header=None)
     
-    # Simulated truth data used to assess performance (not used as input)
-    cls_np_1 = pd.read_csv("./simulated_data/cls_np_1.csv",header=None,squeeze=True)
+    ### Simulated truth data used to assess performance (not used as input)
+    # true cell cluster label for RNA data from CITE-seq
     clusterLbl_np_0 = pd.read_csv("./simulated_data/clusterLbl_np_0.csv",header=None,squeeze=True)
+    # true ADT cell type label for the additional RNA data (optional, for joint analysis)
+    cls_np_1 = pd.read_csv("./simulated_data/cls_np_1.csv",header=None,squeeze=True)
+    # true cell cluster label for the additional RNA data (optional, for joint analysis)
     clusterLbl_np_1 = pd.read_csv("./simulated_data/clusterLbl_np_1.csv",header=None,squeeze=True)
 
 Here, for input data, data0 can be viewed as the RNA data from CITE-seq, data1 can be viewed as the optional RNA data from scRNA-seq, and cls_np_0 can be viewed as the confident cell types label from ADT data. For datasets used to assess method performance, cls_np_1 is the simulated confident cell types for scRNA-seq data, clusterLbl_np_0 is the true cluster labels for data from CITE-seq, and clusterLbl_np_1 is the true cluster labels for data from scRNA-seq.
@@ -55,24 +59,54 @@ Next, convert the datasets format for SECANT:
     cls_np_1 = cls_np_1.to_numpy()
     clusterLbl_np_0 = clusterLbl_np_0.to_numpy()
     clusterLbl_np_1 = clusterLbl_np_1.to_numpy()
- 
-Specify the number of clusters for each confident cell types:
+
+Check cross table for correspondance of simulated ADT cell type and RNA cell cluster
+
+In this simulated data, there are 3 confident ADT cell types (label 0-3), and ADT label 4 refers to uncertain cell type (proportion set to be 20%). Further, there is 1 cluster for confident cell type 0, 2 clusters for type 1 and 2, and 3 clusters for type 3. The total number of clusters therefore is 8. The cluster proportions are set to be [0.1, 0.1, 0.2, 0.2, 0.2, 0.05, 0.05, 0.1]. Cluster-specific parameters are estimated from real data.
+
+Construct UMAP plot for visualization
+    reducer = umap.UMAP(random_state=42)
+    embedding0 = reducer.fit_transform(data0.cpu())
+    print(embedding0.shape)
+
+Visualize simulated data using UMAP plot (colored by simulated ADT label)
+
+    scatter0 = plt.scatter(embedding0[:, 0],
+            embedding0[:, 1],
+            c=cls_np_0, s=1, cmap='Spectral')
+    plt.title('', fontsize=15)
+    mylabel=('Type 1', 'Type 2', 'Type 3','Type 4','Uncertain')
+    legend0 = plt.legend(handles=scatter0.legend_elements()[0],labels=mylabel,loc="upper right", title="Cell Type (ADT)",bbox_to_anchor=(1.35, 1))
+
+![plot1](https://user-images.githubusercontent.com/50209236/96532447-efd47680-1259-11eb-8518-c71c5c9d6758.png)
+
+Visualize simulated data using UMAP plot (colored by simulated cluster label)
+
+    scatter1 = plt.scatter(embedding0[:, 0],
+    	    embedding0[:, 1],
+            c= clusterLbl_np_0, s=0.2, cmap='Spectral')
+    plt.title('', fontsize=15)
+    mylabel=('1', '2', '3', '4', '5' ,'6', '7', '8')
+    legend1 = plt.legend(handles=scatter1.legend_elements()[0],labels=mylabel,loc="upper right", title="Clusters",bbox_to_anchor=(1.35, 1))
+
+![plot2](https://user-images.githubusercontent.com/50209236/96532552-1db9bb00-125a-11eb-955c-52d0c376ba76.png)
+
+Run SECANT (for analyzing CITE-seq data only):
+
+First specify the number of clusters for each confident cell types:
 
     numCluster = [1,2,2,3] 
     K = sum(numCluster)
-    
-Here, 1 in numCluster stands for 1 cluster for confident cell type 1, 2 for 2 clusters for type 2 and 3, and 3 for 3 clusters for type 4.
-The total number of clusters therefore is 8.
-    
-Run SECANT (for analyzing CITE-seq data only):
+Here, 1 in numCluster stands for 1 cluster for confident cell type 0, 2 for 2 clusters for type 1 and 2, and 3 for 3 clusters for type 3.
 
+Now run SECANT
     device = get_device() # use GPU if available
-    outLbl00, conMtxFinal0, tauVecFinal0, muMtxFinal0, cov3DFinal0, loglikFinal0 = SECANT_CITE(data0, numCluster, K, cls_np_0, uncertain = True, learning_rate=0.01, nIter=100, init_seed = 1)
+    outLbl, conMtxFinal0, tauVecFinal0, muMtxFinal0, cov3DFinal0, loglikFinal0 = runOne1(data0, numCluster, K, cls_np_0, uncertain = True, learning_rate=0.01, nIter=100, init_seed = 1)
 
-Get the ARI or AMI:
+Compute ARI and AMI for clustering performance:
 
-    new0_ARI= adjusted_rand_score(outLbl00, clusterLbl_np_0)
-    new0_AMI= adjusted_mutual_info_score(outLbl00, clusterLbl_np_0)
+    ARI_score= adjusted_rand_score(outLbl, clusterLbl_np_0)
+    AMI_score= adjusted_mutual_info_score(outLbl, clusterLbl_np_0)
 
 Print the results:
 
@@ -92,40 +126,23 @@ Print the results:
     print(np.around(tauVecFinal0.cpu().data.numpy(),3))
     tauVec0:
     [0.1   0.1   0.2   0.202 0.2   0.05  0.099 0.049]
-
-    print(new0_ARI)
-    0.9492018730675573
     
-    print(new0_AMI)
-    0.9457362239875382
+    print("ARI =", ARI_score)
+    ARI = 0.9492018730675573
+    
+    print("AMI =", AMI_score)
+    AMI = 0.9457362239875382
 
-Get UMAP plot (check cell type)
+Visualize SECANT clustering results using UMAP plot (colored by cluster label from SECANT)
 
-    reducer = umap.UMAP(random_state=42)
-    embedding0 = reducer.fit_transform(data0.cpu())
-    print(embedding0.shape)
-
-Check UMAP plot (colored by ADT label)
-
-    scatter0 = plt.scatter(embedding0[:, 0],
+    scatter2 = plt.scatter(embedding0[:, 0],
             embedding0[:, 1],
-            c=cls_np_0, s=1, cmap='Spectral')
+            c=outLbl, s=0.2, cmap='Spectral')
     plt.title('', fontsize=15)
-    mylabel=('Type 1', 'Type 2', 'Type 3','Type 4','Uncertain')
-    legend0 = plt.legend(handles=scatter0.legend_elements()[0],labels=mylabel,loc="upper right", title="Cell Type (ADT)",bbox_to_anchor=(1.35, 1))
+    mylabel=('1', '2', '3', '4', '5' ,'6', '7', '8')
+    legend2 = plt.legend(handles=scatter2.legend_elements()[0],labels=mylabel,loc="upper right", title="Clusters",bbox_to_anchor=(1.17, 1.02))
 
-![plot1](https://user-images.githubusercontent.com/50209236/96532447-efd47680-1259-11eb-8518-c71c5c9d6758.png)
 
-Check UMAP plot (colored by clustering results from SECANT)
-
-	scatter1 = plt.scatter(embedding0[:, 0],
-            embedding0[:, 1],
-            c= clusterLbl_np_0, s=0.2, cmap='Spectral')
-	plt.title('', fontsize=15)
-	mylabel=('1', '2', '3', '4', '5' ,'6', '7', '8')
-	legend1 = plt.legend(handles=scatter1.legend_elements()[0],labels=mylabel,loc="upper right", title="Clusters",bbox_to_anchor=(1.35, 1))
-
-![plot2](https://user-images.githubusercontent.com/50209236/96532552-1db9bb00-125a-11eb-955c-52d0c376ba76.png)
 
 ## Function: SECANT_CITE
 

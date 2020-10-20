@@ -70,7 +70,7 @@ Check cross table for correspondance of simulated ADT cell type and RNA cell clu
 
 ![plot0](https://user-images.githubusercontent.com/50209236/96535220-5314d780-125f-11eb-80aa-24458fcea842.png)
 
-In this simulated data, there are 3 confident ADT cell types (label 0-3), and ADT label 4 refers to uncertain cell type (proportion set to be 20%). Further, there is 1 cluster for confident cell type 0, 2 clusters for type 1 and 2, and 3 clusters for type 3. The total number of clusters is 8. The cluster proportions are set to be (0.1, 0.1, 0.2, 0.2, 0.2, 0.05, 0.05, 0.1). Cluster-specific parameters are estimated from real data.
+In this simulated data, there are 4 confident ADT cell types (label 0-3), and ADT label 4 refers to uncertain cell type (proportion set to be 20%). Further, there is 1 cluster for confident cell type 0, 2 clusters for type 1 and 2, and 3 clusters for type 3. The total number of clusters is 8. The cluster proportions are set to be (0.1, 0.1, 0.2, 0.2, 0.2, 0.05, 0.05, 0.1). Cluster-specific parameters are estimated from real data.
 
 Construct UMAP plot for visualization
 

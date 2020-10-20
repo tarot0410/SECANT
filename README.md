@@ -77,13 +77,27 @@ Get the ARI or AMI:
 Print the results:
 
     print("loglik  =", loglikFinal0.cpu().data.numpy()) 
+    loglik  = -18916.006562894596
+    
     print("conMtx:")
     print(np.around(conMtxFinal0.cpu().data.numpy(),3))
+    conMtx:
+    [[0.82  0.    0.    0.    0.    0.    0.    0.   ]
+    [0.    0.809 0.79  0.    0.    0.    0.    0.   ]
+    [0.    0.    0.    0.776 0.764 0.    0.    0.   ]
+    [0.    0.    0.    0.    0.    0.772 0.792 0.785]
+    [0.18  0.191 0.21  0.224 0.236 0.228 0.208 0.215]]
+    
     print("tauVec0:")
     print(np.around(tauVecFinal0.cpu().data.numpy(),3))
+    tauVec0:
+    [0.1   0.1   0.2   0.202 0.2   0.05  0.099 0.049]
 
-    print("ARI:", new0_ARI)
-    print("AMI:", new0_AMI)
+    print(new0_ARI)
+    0.9492018730675573
+    
+    print(new0_AMI)
+    0.9457362239875382
 
 Get UMAP plot (check cell type)
 
@@ -91,7 +105,7 @@ Get UMAP plot (check cell type)
     embedding0 = reducer.fit_transform(data0.cpu())
     print(embedding0.shape)
 
-Check UMAP plot (ADT label)
+Check UMAP plot (colored by ADT label)
 
     scatter0 = plt.scatter(embedding0[:, 0],
             embedding0[:, 1],
@@ -100,6 +114,14 @@ Check UMAP plot (ADT label)
     mylabel=('Type 1', 'Type 2', 'Type 3','Type 4','Uncertain')
     legend0 = plt.legend(handles=scatter0.legend_elements()[0],labels=mylabel,loc="upper right", title="Cell Type (ADT)",bbox_to_anchor=(1.35, 1))
 
+Check UMAP plot (colored by clustering results from SECANT)
+
+	scatter1 = plt.scatter(embedding0[:, 0],
+            embedding0[:, 1],
+            c= clusterLbl_np_0, s=0.2, cmap='Spectral')
+	plt.title('', fontsize=15)
+	mylabel=('1', '2', '3', '4', '5' ,'6', '7', '8')
+	legend1 = plt.legend(handles=scatter1.legend_elements()[0],labels=mylabel,loc="upper right", title="Clusters",bbox_to_anchor=(1.35, 1))
 
 ## Function: SECANT_CITE
 

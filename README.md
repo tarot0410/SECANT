@@ -61,10 +61,15 @@ Next, convert the datasets format for SECANT:
     clusterLbl_np_1 = clusterLbl_np_1.to_numpy()
 
 Check cross table for correspondance of simulated ADT cell type and RNA cell cluster
+    
+    pd.crosstab(cls_np_0, clusterLbl_np_0, rownames=["true ADT label"], colnames=["true cluster label"])
 
-In this simulated data, there are 3 confident ADT cell types (label 0-3), and ADT label 4 refers to uncertain cell type (proportion set to be 20%). Further, there is 1 cluster for confident cell type 0, 2 clusters for type 1 and 2, and 3 clusters for type 3. The total number of clusters therefore is 8. The cluster proportions are set to be [0.1, 0.1, 0.2, 0.2, 0.2, 0.05, 0.05, 0.1]. Cluster-specific parameters are estimated from real data.
+![plot0](https://user-images.githubusercontent.com/50209236/96535220-5314d780-125f-11eb-80aa-24458fcea842.png)
+
+In this simulated data, there are 3 confident ADT cell types (label 0-3), and ADT label 4 refers to uncertain cell type (proportion set to be 20%). Further, there is 1 cluster for confident cell type 0, 2 clusters for type 1 and 2, and 3 clusters for type 3. The total number of clusters therefore is 8. The cluster proportions are set to be (0.1, 0.1, 0.2, 0.2, 0.2, 0.05, 0.05, 0.1). Cluster-specific parameters are estimated from real data.
 
 Construct UMAP plot for visualization
+
     reducer = umap.UMAP(random_state=42)
     embedding0 = reducer.fit_transform(data0.cpu())
     print(embedding0.shape)
@@ -97,9 +102,11 @@ First specify the number of clusters for each confident cell types:
 
     numCluster = [1,2,2,3] 
     K = sum(numCluster)
+    
 Here, 1 in numCluster stands for 1 cluster for confident cell type 0, 2 for 2 clusters for type 1 and 2, and 3 for 3 clusters for type 3.
 
 Now run SECANT
+    
     device = get_device() # use GPU if available
     outLbl, conMtxFinal0, tauVecFinal0, muMtxFinal0, cov3DFinal0, loglikFinal0 = runOne1(data0, numCluster, K, cls_np_0, uncertain = True, learning_rate=0.01, nIter=100, init_seed = 1)
 
@@ -142,7 +149,7 @@ Visualize SECANT clustering results using UMAP plot (colored by cluster label fr
     mylabel=('1', '2', '3', '4', '5' ,'6', '7', '8')
     legend2 = plt.legend(handles=scatter2.legend_elements()[0],labels=mylabel,loc="upper right", title="Clusters",bbox_to_anchor=(1.17, 1.02))
 
-
+![plot3](https://user-images.githubusercontent.com/50209236/96535222-55773180-125f-11eb-83b8-3421621abfa7.png)
 
 ## Function: SECANT_CITE
 

@@ -35,7 +35,7 @@ def get_device():
 # convert a df to tensor to be used in pytorch
 def df_to_tensor(df):
     #device = get_device()
-    return torch.from_numpy(df.values).float()#.to(device)
+    return torch.from_numpy(df.values).float().to(device)
 
 # Compute log likelihood for the dataset without labels
 def logLik(data0, tauVec, muMtx, cov_3D, K, N):   

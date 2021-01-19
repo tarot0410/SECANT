@@ -43,7 +43,7 @@ def get_likelihoods(X, muMtx, scale3D, log=True):
     log_likelihoods = dist.MultivariateNormal(
         loc = muMtx[:, None], # (K, 1)
         scale_tril = scale3D[:, None] # (K, 1)
-    ).log_prob(data0)
+    ).log_prob(X)
 
     if not log:
         log_likelihoods.exp_()

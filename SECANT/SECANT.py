@@ -193,7 +193,7 @@ def SECANT_CITE(data0, numCluster, cls, learning_rate=0.01, maxIter=500, earlyst
     log_posteriors_final = get_posteriors(logLik_temp)
     logP, lbl = torch.max(log_posteriors_final, 0, keepdim=True)
 
-    return lbl.view(N), conMtxFinal, mu_out, scale3D_out, logLikVec, logLik_final
+    return lbl.view(N), conMtxFinal, mu_out, scale3D_out, log_posteriors_final, logLikVec, logLik_final
 
 # compute logLikelihood of observed data for two datasets, one with labels and the other doesn't case
 def fullLogLik2(data0, data1, tauVec0, tauVec1, muMtx, conMtx, cov3D, classLabel_array, K, N0, N1):  

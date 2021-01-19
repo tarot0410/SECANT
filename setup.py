@@ -9,7 +9,6 @@ setup(name='SECANT',
       license='MIT',
       packages=['SECANT'],
       install_requires=[
-          'pandas','numpy','torch','umap',
-          'matplotlib','sklearn'
+          'pandas','numpy','torch','sklearn'
       ],
       zip_safe=False)

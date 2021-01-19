@@ -13,104 +13,187 @@ from sklearn.metrics.cluster import adjusted_rand_score
 from sklearn.metrics.cluster import adjusted_mutual_info_score
 import time
 from sklearn.mixture import GaussianMixture
-from sklearn.cluster import KMeans
-import umap
-import matplotlib
+import umap.umap_ as umap
+import matplotlib.pyplot as plt
+import itertools
+from itertools import combinations
+import gc
 
-# Set up GPU if available
 if torch.cuda.is_available():  
   dev = "cuda:0" 
 else:  
   dev = "cpu"  
-device = torch.device(dev)  
-
-# determine the supported device
-def get_device():
-    if torch.cuda.is_available():
-        device = torch.device('cuda:0')
-    else:
-        device = torch.device('cpu') # don't have GPU 
-    return device
+device = torch.device(dev) 
 
 # convert a df to tensor to be used in pytorch
 def df_to_tensor(df):
-    #device = get_device()
     return torch.from_numpy(df.values).float().to(device)
 
-# Compute log likelihood for the dataset without labels
-def logLik(data0, tauVec, muMtx, cov_3D, K, N):   
-    # create raw log-tau matrix (n*K)
-    logTauVec = torch.log(tauVec)
-    tauMtxTemp0 = logTauVec.repeat(N, 1)
+def get_likelihoods(X, muMtx, scale3D, log=True):
+    """
+    :param X: design matrix (examples, features)
+    :param mu: the component means (K, features)
+    :param logvar: the component log-variances (K, features)
+    :param log: return value in log domain?
+        Note: exponentiating can be unstable in high dimensions.
+    :return likelihoods: (K, examples)
+    """
 
-    # set up raw log density matrix (K*N)
-    logDMtxTemp0 = torch.empty(K, N, dtype = torch.float64).to(device)
-    for k in range(K):
-        mvn_k = dist.MultivariateNormal(muMtx[k,:], cov_3D[k])
-        temp_logD = mvn_k.log_prob(data0)
-        logDMtxTemp0[k,:] = temp_logD
+    # get feature-wise log-likelihoods (K, examples)
+    log_likelihoods = dist.MultivariateNormal(
+        loc = muMtx[:, None], # (K, 1)
+        scale_tril = scale3D[:, None] # (K, 1)
+    ).log_prob(data0)
 
-    # Compute log likelihood
-    tauMtx0 = tauMtxTemp0 - logTauVec[0]
-    logDMtx0 = logDMtxTemp0 - logDMtxTemp0[0,:]
+    if not log:
+        log_likelihoods.exp_()
     
-    logDMtx0[logDMtx0>690.7] = 690.7 # avoid too large value
-    if torch.max(logDMtx0) == 690.7:
-        print("logDMtx0_max too large!")
+    return log_likelihoods
 
-    logLikTemp0 = torch.mm(torch.exp(tauMtx0), torch.exp(logDMtx0))
+def get_posteriors(log_likelihoods):
+    """
+    Calculate the the posterior probabilities log p(z|x), assuming a uniform prior over
+    components.
+    :param likelihoods: the relative likelihood p(x|z), of each data point under each mode (K, examples)
+    :return: the log posterior p(z|x) (K, examples)
+    """
+    posteriors = log_likelihoods - torch.logsumexp(log_likelihoods, dim=0, keepdim=True)
+    return posteriors
+  
+# Function for initialization
+# Input numCluter: a list, where each number refers to the number of 
+# sub clusters for a common type (matched by index)
+# ex. [1,2,2,1] --> type 1 has 1 component, type 2 has 2 components...
+def initParam(data0, numCluster, C, K, P, cls, n_gmm_init, init_seed):
+    data0_np = data0.cpu().numpy()
+    cls_np = cls.cpu().numpy()
+    conMtx_temp = torch.zeros(C-1, K, dtype = torch.float32).to(device)
+    mu_init = torch.empty(K, P, dtype = torch.float32)
+    cov_diag_init = torch.empty(K, P, dtype = torch.float32)
 
-    logLikTemp1 = torch.trace(torch.log(logLikTemp0))
-    logLik = logLikTemp1 + N*logTauVec[0] + torch.sum(logDMtxTemp0[0,:])
-    return logLik
+    ct_ind = 0
+    for c in range(C-1):
+        subData = data0_np[cls_np == c, :]
+        numC0 = numCluster[c]
+        # set up conMtx
+        conMtx_temp[c, ct_ind: (ct_ind + numC0)] = 1
+        # gmm for sub cluster
+        if numC0 > 1:
+            gmmSub_vec = []
+            gmmSub_BIC = []
+            for i in range(n_gmm_init):
+                gmmSub = GaussianMixture(n_components=numC0, covariance_type='diag', reg_covar=1e-5, random_state=init_seed+i*10).fit(subData)
+                gmmSub_vec.append(gmmSub)
+                gmmSub_BIC.append(gmmSub.bic(subData))
+            val, idx = min((val, idx) for (idx, val) in enumerate(gmmSub_BIC))
+            gmmSub_best = gmmSub_vec[idx]
+        else:
+            gmmSub_best = GaussianMixture(n_components=numC0, covariance_type='diag', reg_covar=1e-5, random_state=init_seed).fit(subData)
+        # set up cluster parameters
+        mu_init[ct_ind: (ct_ind + numC0)] = torch.tensor(gmmSub_best.means_, dtype = torch.float32)
+        cov_diag_init[ct_ind: (ct_ind + numC0)] = torch.tensor(gmmSub_best.covariances_, dtype = torch.float32)
 
-# Compute log likelihood and posterior prob matrix for the dataset with labels
-def logLikDelta(data0, tauVec, muMtx, cov_3D, K, N):
-    # create raw log-tau matrix (N*K)
-    logTauVec = torch.log(tauVec)
-    tauMtxTemp0 = logTauVec.repeat(N, 1)
+        ct_ind += numC0
+    return conMtx_temp, mu_init, cov_diag_init
 
-    # set up raw log density matrix (K*N)
-    logDMtxTemp0 = torch.empty(K, N, dtype = torch.float64).to(device)
-    for k in range(K):
-        mvn_k = dist.MultivariateNormal(muMtx[k,:], cov_3D[k])
-        temp_logD = mvn_k.log_prob(data0)
-        logDMtxTemp0[k,:] = temp_logD
+def fullLogLik(data0, conMtx, muMtx, scale3D, cls, K, N):
+    log_likelihoods = get_likelihoods(data0, muMtx, scale3D, log=True)
+    log_posteriors = get_posteriors(log_likelihoods)
+    logP, ind = torch.max(log_posteriors, 0, keepdim=True)
+    l1 = torch.sum(log_likelihoods[ind, range(log_likelihoods.size()[1])])
 
-    # Compute log likelihood
-    tauMtx0 = tauMtxTemp0 - logTauVec[0]
-    logDMtx0 = logDMtxTemp0 - logDMtxTemp0[0,:]
+    cls_long = cls.long()
+    conMtxFull = conMtx[cls_long, :]
 
-    logDMtx0[logDMtx0>690.7] = 690.7 # avoid too large value
-    if torch.max(logDMtx0) == 690.7:
-        print("logDMtx0_max too large!")
-    
-    logLikTemp0 = torch.mm(torch.exp(tauMtx0), torch.exp(logDMtx0))
-    logLikTemp1 = torch.trace(torch.log(logLikTemp0))
-    logLik = logLikTemp1 + N*logTauVec[0] + torch.sum(logDMtxTemp0[0,:])
-
-    # Compute delta matrix
-    deltaMtx = torch.empty(N, K, dtype=torch.float64).to(device)
-    deltaMtx[:,0] = 1/torch.diagonal(logLikTemp0)
-    for j in range(1, K):      
-        tauMtx_j = tauMtxTemp0 - logTauVec[j]
-        logDMtx_j = logDMtxTemp0 - logDMtxTemp0[j,:]
-        logLikTemp_j = torch.mm(torch.exp(tauMtx_j), torch.exp(logDMtx_j))
-        deltaMtx[:,j] = 1/torch.diagonal(logLikTemp_j)
-    
-    return logLik, deltaMtx
-
-# compute logLikelihood of observed data for one dataset with labels case
-def fullLogLik1(data0, tauVec, muMtx, conMtx, cov3D, classLabel_array, K, N):  
-    l1, deltaMtx = logLikDelta(data0, tauVec, muMtx, cov3D, K, N)
-    conMtxFull = torch.empty(N, K, dtype = torch.float64).to(device)
-    deltaMtxT = torch.transpose(deltaMtx,0,1)
-    for i in range(N):
-        conMtxFull[i,:] = conMtx[classLabel_array[i].astype(int),:] 
-        
-    tempMtx = torch.mm(conMtxFull, deltaMtxT)
-    temp = torch.trace(torch.log(tempMtx))
+    tempMtx = torch.mm(conMtxFull, torch.exp(log_posteriors))
+    temp = torch.trace(torch.log(tempMtx + 1e-5))
     return temp + l1
+
+# Set up optimization algorithm for one dataset case
+def optimDL1(parameters, data0, conMtx_temp, C, K, N, P, cls, learning_rate, maxIter, earlystop):
+    # Defines a SGD optimizer to update the parameters
+    optimizer = optim.Rprop(parameters, lr=learning_rate) 
+
+    tril_indices = torch.tril_indices(row=P, col=P, offset=0)
+    pVec, muMtx, lowtri_mtx = parameters
+    logLikVec = np.zeros(maxIter)
+
+    for i in range(maxIter):
+        optimizer.zero_grad()
+
+        # set up transformed p vector
+        pVec_tran = dist.biject_to(dist.Binomial.arg_constraints['probs'])(pVec)
+        # set up transformed concordance matrix
+        conMtx_tran = torch.empty(C, K, dtype = torch.float32).to(device)
+        conMtx_tran[0:(C-1),:] = conMtx_temp*pVec_tran
+        conMtx_tran[C-1,:] = 1-pVec_tran
+
+        # set up transformed cov3D matrix
+        scale3D = torch.zeros(K, P, P, dtype = torch.float32).to(device)
+        scale3D[:, tril_indices[0], tril_indices[1]] = lowtri_mtx
+        scale3D[:, range(P), range(P)] = abs(scale3D[:, range(P), range(P)])
+        
+        # Define loss function xMtx, piVec, alphaMtx, K
+        NLL = - fullLogLik(data0, conMtx_tran, muMtx, scale3D, cls, K, N)
+        logLikVec[i] = -NLL
+
+        if i % 50 == 0:
+            print(i, "th iter...")
+            if (i > 0) &  (abs((logLikVec[i]-logLikVec[i-50]-1e-5)/(logLikVec[i-50]+1e-5)) < earlystop):
+                break
+        
+        NLL.backward()
+        optimizer.step()
+    
+    return conMtx_tran, muMtx, scale3D, logLikVec, -NLL
+
+# Final function to run algorithm for one dataset case
+def SECANT_CITE(data0, numCluster, cls, learning_rate=0.01, maxIter=500, earlystop = 0.0001, n_gmm_init=5, init_seed=2020):
+    torch.manual_seed(init_seed)
+    
+    C = len(torch.unique(cls))
+    N = data0.size()[0]
+    P = data0.size()[1] 
+    K = sum(numCluster)
+
+    # concordance p vector
+    p_init = torch.ones(K, dtype = torch.float32) *0.5
+    pVec = dist.biject_to(dist.Binomial.arg_constraints['probs']).inv(p_init)
+    
+    # clustering parameters
+    conMtx_temp, mu_init, cov_diag_init = initParam(data0, numCluster, C, K, P, cls, n_gmm_init, init_seed)
+
+    # initial cov3D
+    tril_indices = torch.tril_indices(row=P, col=P, offset=0)
+    cov_diag_init = cov_diag_init.to(device)
+    temp0 = torch.eye(P, dtype=torch.float32).to(device)
+    temp0 = temp0.reshape((1, P, P))
+    temp1 = temp0.repeat(K, 1, 1)
+    cov_diag_init = cov_diag_init.view(K,P,1)
+    cov_int = temp1 * cov_diag_init
+
+    cov3D_decomp = torch.cholesky(cov_int)
+    lowtri_mtx = cov3D_decomp[:, tril_indices[0], tril_indices[1]]
+    
+    muMtx = mu_init.clone()
+
+    pVec = pVec.to(device)
+    muMtx = muMtx.to(device)
+    lowtri_mtx = lowtri_mtx.to(device)
+    
+    pVec.requires_grad = True
+    muMtx.requires_grad = True
+    lowtri_mtx.requires_grad = True
+
+    param = [pVec, muMtx, lowtri_mtx]
+
+    conMtxFinal, mu_out, scale3D_out, logLikVec, logLik_final = optimDL(param, data0, conMtx_temp, C, K, N, P, cls, learning_rate, maxIter, earlystop)
+
+    logLik_temp = get_likelihoods(data0, mu_out, scale3D_out, log=True)
+    log_posteriors_final = get_posteriors(logLik_temp)
+    logP, lbl = torch.max(log_posteriors_final, 0, keepdim=True)
+
+    return lbl.view(N), conMtxFinal, mu_out, scale3D_out, logLikVec, logLik_final
 
 # compute logLikelihood of observed data for two datasets, one with labels and the other doesn't case
 def fullLogLik2(data0, data1, tauVec0, tauVec1, muMtx, conMtx, cov3D, classLabel_array, K, N0, N1):  
@@ -123,127 +206,6 @@ def fullLogLik2(data0, data1, tauVec0, tauVec1, muMtx, conMtx, cov3D, classLabel
     tempMtx = torch.mm(conMtxFull, deltaMtxT)
     l1 = logLik(data1, tauVec1, muMtx, cov3D, K, N1)
     return torch.trace(torch.log(tempMtx)) + l0 + l1
-
-
-
-# Function for initialization
-# Input numCluter: a list, where each number refers to the number of 
-# sub clusters for a common type (matched by index)
-# ex. [1,2,2,1] --> type 1 has 1 component, type 2 has 2 components...
-# Output structure of conMtx, initialized muMtx and tauVec
-def initParam(data0, numCluster, C, K, P, cls_np, init_seed):
-    data0_np = data0.cpu().numpy()
-    conMtx_temp = torch.zeros(C-1, K, dtype = torch.float64).to(device)
-    mu_init = torch.empty(K, P, dtype = torch.float64)
-    tau_temp = torch.empty(K, dtype = torch.float64)
-    ct_ind = 0
-    for c in range(C-1):
-        subData = data0_np[cls_np == c, :]
-        numC0 = numCluster[c]
-        # set up conMtx
-        conMtx_temp[c, ct_ind: (ct_ind + numC0)] = 1
-        # gmm for sub cluster
-        gmmSub = GaussianMixture(n_components=numC0, random_state=init_seed).fit(subData)
-        # set up cluster parameters
-        mu_init[ct_ind: (ct_ind + numC0)] = torch.tensor(gmmSub.means_, dtype = torch.float64)
-        tau_temp[ct_ind: (ct_ind + numC0)] = torch.tensor(gmmSub.weights_, dtype = torch.float64)*sum(cls_np == c)
-
-        ct_ind += numC0
-
-    tau_init = tau_temp/tau_temp.sum()
-    return conMtx_temp, mu_init, tau_init
-
-# Set up optimization algorithm for one dataset case
-def optimDL1(parameters, data0, conMtx_temp, C, K, P, N, cls_np, learning_rate, nIter):
-    # Defines a SGD optimizer to update the parameters
-    optimizer = optim.Rprop(parameters, lr=learning_rate) 
-
-    pVec, tauVec, muMtx, scale_3D = parameters
-    
-    for i in range(nIter):
-        optimizer.zero_grad()
-
-        # set up transformed p vector
-        pVec_tran = dist.biject_to(dist.Binomial.arg_constraints['probs'])(pVec)
-
-        # set up transformed concordance matrix
-        conMtx_tran = torch.empty(C, K, dtype = torch.float64).to(device)
-        conMtx_tran[0:(C-1),:] = conMtx_temp*pVec_tran
-        conMtx_tran[C-1,:] = 1-pVec_tran
-
-        # set up transformed tau vector
-        tauVec_tran = dist.biject_to(dist.Multinomial.arg_constraints['probs'])(tauVec)
-        # tauVec_tran = dist.transform_to(dist.Multinomial.arg_constraints['probs'])(tauVec)
-
-        # set up transformed cov3D matrix
-        cov3D_tran = torch.empty(K, P, P, dtype = torch.float64).to(device)
-        for m in range(K):
-            cov3D_chol_m = dist.transform_to(dist.constraints.lower_cholesky)(scale_3D[m])
-            cov3D_tran[m] = torch.mm(cov3D_chol_m, cov3D_chol_m.t())
-
-        # Define loss function xMtx, piVec, alphaMtx, K
-        NLL = - fullLogLik1(data0, tauVec_tran, muMtx, conMtx_tran, cov3D_tran, cls_np, K, N)
-        
-        if i % 20 == 0:
-            print("")
-            print(i, "loglik  =", -NLL.cpu().data.numpy())
-            print("conMtx:")
-            print(np.around(conMtx_tran.cpu().data.numpy(),3))
-            print("tauVec:")
-            print(np.around(tauVec_tran.cpu().data.numpy(),3))
-        
-        NLL.backward()
-        optimizer.step()
-        
-    return conMtx_tran, tauVec_tran, muMtx, cov3D_tran, -NLL
-
-# Final function to run algorithm for one dataset case
-def SECANT_CITE(data0, numCluster, K, cls_np, uncertain = True, learning_rate=0.01, nIter=100, init_seed=2020):
-    torch.manual_seed(init_seed)
-    
-    N = data0.size()[0]
-    P = data0.size()[1] 
-    if uncertain:
-        C = np.unique(cls_np).size
-    else:
-        C = np.unique(cls_np).size+1
-   
-    # concordance p vector
-    p_init = torch.ones(K, dtype = torch.float64)*0.5
-    pVec = dist.biject_to(dist.Binomial.arg_constraints['probs']).inv(p_init)
-    
-    # clustering parameters
-    conMtx_temp, mu_init, tau_init = initParam(data0, numCluster, C, K, P, cls_np, init_seed)
-
-    # initial cov3D
-    scale3D = torch.empty(K, P, P, dtype = torch.float64).to(device)
-    for k in range(K):
-        scale3D[k] = torch.eye(P, dtype = torch.float64).to(device)*0.01
-
-    tauVec = dist.biject_to(dist.Multinomial.arg_constraints['probs']).inv(tau_init)
-    muMtx = mu_init.clone()
-
-    pVec = pVec.to(device)
-    tauVec = tauVec.to(device)
-    muMtx = muMtx.to(device)
-
-    pVec.requires_grad = True
-    tauVec.requires_grad = True
-    muMtx.requires_grad = True
-
-    scale3D = scale3D.to(device)
-    scale3D.requires_grad = True
-    param = [pVec, tauVec, muMtx, scale3D]
-
-    conMtxFinal, tauVecFinal, muMtxFinal, cov3DFinal, loglikFinal = optimDL1(param, data0, conMtx_temp, C, K, P, N, cls_np, learning_rate, nIter)
-
-    l1, deltaMtxFinal = logLikDelta(data0, tauVecFinal, muMtxFinal, cov3DFinal, K, N)
-    outLbl = torch.zeros(N)
-    for i in range(N):
-        values, indices = torch.max(deltaMtxFinal[i,:], 0)
-        outLbl[i] = indices
-    
-    return outLbl, conMtxFinal, tauVecFinal, muMtxFinal, cov3DFinal, loglikFinal
 
 # Set up optimization algorithm for two datasets case
 def optimDL2(parameters, data0, data1, conMtx_temp, C, K, P, N0, N1, cls_np, learning_rate, nIter):

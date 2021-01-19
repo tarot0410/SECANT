@@ -187,7 +187,7 @@ def SECANT_CITE(data0, numCluster, cls, learning_rate=0.01, maxIter=500, earlyst
 
     param = [pVec, muMtx, lowtri_mtx]
 
-    conMtxFinal, mu_out, scale3D_out, logLikVec, logLik_final = optimDL(param, data0, conMtx_temp, C, K, N, P, cls, learning_rate, maxIter, earlystop)
+    conMtxFinal, mu_out, scale3D_out, logLikVec, logLik_final = optimDL1(param, data0, conMtx_temp, C, K, N, P, cls, learning_rate, maxIter, earlystop)
 
     logLik_temp = get_likelihoods(data0, mu_out, scale3D_out, log=True)
     log_posteriors_final = get_posteriors(logLik_temp)

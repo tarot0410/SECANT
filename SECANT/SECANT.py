@@ -3,21 +3,11 @@
 
 import torch
 import torch.distributions as dist
-import matplotlib.pyplot as plt
 from torch.autograd import Variable
 import torch.optim as optim
 import numpy as np
 import math
-import pandas as pd
-from sklearn.metrics.cluster import adjusted_rand_score
-from sklearn.metrics.cluster import adjusted_mutual_info_score
-import time
 from sklearn.mixture import GaussianMixture
-import umap.umap_ as umap
-import matplotlib.pyplot as plt
-import itertools
-from itertools import combinations
-import gc
 
 if torch.cuda.is_available():  
   dev = "cuda:0" 

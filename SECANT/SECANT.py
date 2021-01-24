@@ -86,7 +86,7 @@ def initParam(data0, numCluster, C, K, P, cls, n_gmm_init, init_seed):
         ct_ind += numC0
     return conMtx_temp, mu_init, cov_diag_init
 
-def fullLogLik(data0, conMtx, muMtx, scale3D, cls, K, N):
+def fullLogLik1(data0, conMtx, muMtx, scale3D, cls, K, N):
     log_likelihoods = get_likelihoods(data0, muMtx, scale3D, log=True)
     log_posteriors = get_posteriors(log_likelihoods)
     logP, ind = torch.max(log_posteriors, 0, keepdim=True)
@@ -97,12 +97,15 @@ def fullLogLik(data0, conMtx, muMtx, scale3D, cls, K, N):
 
     tempMtx = torch.mm(conMtxFull, torch.exp(log_posteriors))
     temp = torch.trace(torch.log(tempMtx + 1e-5))
+
     return temp + l1
 
 # Set up optimization algorithm for one dataset case
 def optimDL1(parameters, data0, conMtx_temp, C, K, N, P, cls, learning_rate, maxIter, earlystop):
     # Defines a SGD optimizer to update the parameters
     optimizer = optim.Rprop(parameters, lr=learning_rate) 
+    # optimizer = optim.Adam(parameters, lr=learning_rate)
+    # optimizer = optim.Adamax(parameters, lr=learning_rate)
 
     tril_indices = torch.tril_indices(row=P, col=P, offset=0)
     pVec, muMtx, lowtri_mtx = parameters
@@ -114,27 +117,33 @@ def optimDL1(parameters, data0, conMtx_temp, C, K, N, P, cls, learning_rate, max
         # set up transformed p vector
         pVec_tran = dist.biject_to(dist.Binomial.arg_constraints['probs'])(pVec)
         # set up transformed concordance matrix
-        conMtx_tran = torch.empty(C, K, dtype = torch.float32).to(device)
+        conMtx_tran = torch.empty(C, K, dtype = torch.float32, device = device)
         conMtx_tran[0:(C-1),:] = conMtx_temp*pVec_tran
         conMtx_tran[C-1,:] = 1-pVec_tran
 
         # set up transformed cov3D matrix
-        scale3D = torch.zeros(K, P, P, dtype = torch.float32).to(device)
+        # cov3D_decomp = torch.zeros(K, P, P, dtype = torch.float32).to(device)
+        # cov3D_decomp[:, tril_indices[0], tril_indices[1]] = lowtri_mtx
+        # cov3D_decomp_t = cov3D_decomp.permute(0,2,1)
+        # cov3D = cov3D_decomp @ cov3D_decomp_t
+        scale3D = torch.zeros(K, P, P, dtype = torch.float32, device = device)
         scale3D[:, tril_indices[0], tril_indices[1]] = lowtri_mtx
         scale3D[:, range(P), range(P)] = abs(scale3D[:, range(P), range(P)])
         
         # Define loss function xMtx, piVec, alphaMtx, K
-        NLL = - fullLogLik(data0, conMtx_tran, muMtx, scale3D, cls, K, N)
+        NLL = - fullLogLik1(data0, conMtx_tran, muMtx, scale3D, cls, K, N)
         logLikVec[i] = -NLL
-
+    
         if i % 50 == 0:
-            print(i, "th iter...")
+            # print(i, "th iter...")
             if (i > 0) &  (abs((logLikVec[i]-logLikVec[i-50]-1e-5)/(logLikVec[i-50]+1e-5)) < earlystop):
+                NLL.backward()
+                optimizer.step()
                 break
-        
+
         NLL.backward()
         optimizer.step()
-    
+
     return conMtx_tran, muMtx, scale3D, logLikVec, -NLL
 
 # Final function to run algorithm for one dataset case
@@ -147,7 +156,7 @@ def SECANT_CITE(data0, numCluster, cls, learning_rate=0.01, maxIter=500, earlyst
     K = sum(numCluster)
 
     # concordance p vector
-    p_init = torch.ones(K, dtype = torch.float32) *0.5
+    p_init = torch.ones(K, dtype = torch.float32, device = device) *0.5
     pVec = dist.biject_to(dist.Binomial.arg_constraints['probs']).inv(p_init)
     
     # clustering parameters
@@ -156,7 +165,7 @@ def SECANT_CITE(data0, numCluster, cls, learning_rate=0.01, maxIter=500, earlyst
     # initial cov3D
     tril_indices = torch.tril_indices(row=P, col=P, offset=0)
     cov_diag_init = cov_diag_init.to(device)
-    temp0 = torch.eye(P, dtype=torch.float32).to(device)
+    temp0 = torch.eye(P, dtype=torch.float32, device = device)
     temp0 = temp0.reshape((1, P, P))
     temp1 = temp0.repeat(K, 1, 1)
     cov_diag_init = cov_diag_init.view(K,P,1)
@@ -165,11 +174,7 @@ def SECANT_CITE(data0, numCluster, cls, learning_rate=0.01, maxIter=500, earlyst
     cov3D_decomp = torch.cholesky(cov_int)
     lowtri_mtx = cov3D_decomp[:, tril_indices[0], tril_indices[1]]
     
-    muMtx = mu_init.clone()
-
-    pVec = pVec.to(device)
-    muMtx = muMtx.to(device)
-    lowtri_mtx = lowtri_mtx.to(device)
+    muMtx = mu_init.to(device)
     
     pVec.requires_grad = True
     muMtx.requires_grad = True
@@ -183,9 +188,13 @@ def SECANT_CITE(data0, numCluster, cls, learning_rate=0.01, maxIter=500, earlyst
     log_posteriors_final = get_posteriors(logLik_temp)
     logP, lbl = torch.max(log_posteriors_final, 0, keepdim=True)
 
+    pVec.detach()
+    muMtx.detach()
+    lowtri_mtx.detach()
+
     return lbl.view(N), conMtxFinal, mu_out, scale3D_out, log_posteriors_final, logLikVec, logLik_final
 
-  # compute logLikelihood of observed data for two datasets, one with labels and the other doesn't case
+# compute logLikelihood of observed data for two datasets, one with labels and the other doesn't case
 # data0: CITE-seq data (with ADT confident cell type)
 # data1: scRNA-seq data (without ADT info)
 def fullLogLik2(data0, data1, conMtx, muMtx, scale3D, cls, K, N0, N1): 
@@ -223,12 +232,12 @@ def optimDL2(parameters, data0, data1, conMtx_temp, C, K, P, N0, N1, cls, learni
         # set up transformed p vector
         pVec_tran = dist.biject_to(dist.Binomial.arg_constraints['probs'])(pVec)
         # set up transformed concordance matrix
-        conMtx_tran = torch.empty(C, K, dtype = torch.float32).to(device)
+        conMtx_tran = torch.empty(C, K, dtype = torch.float32, device = device)
         conMtx_tran[0:(C-1),:] = conMtx_temp*pVec_tran
         conMtx_tran[C-1,:] = 1-pVec_tran
 
         # set up transformed cov3D matrix
-        scale3D = torch.zeros(K, P, P, dtype = torch.float32).to(device)
+        scale3D = torch.zeros(K, P, P, dtype = torch.float32, device = device)
         scale3D[:, tril_indices[0], tril_indices[1]] = lowtri_mtx
         scale3D[:, range(P), range(P)] = abs(scale3D[:, range(P), range(P)])
         
@@ -237,8 +246,9 @@ def optimDL2(parameters, data0, data1, conMtx_temp, C, K, P, N0, N1, cls, learni
         logLikVec[i] = -NLL
 
         if i % 50 == 0:
-            print(i, "th iter...")
             if (i > 0) &  (abs((logLikVec[i]-logLikVec[i-50]-1e-5)/(logLikVec[i-50]+1e-5)) < earlystop):
+                NLL.backward()
+                optimizer.step()
                 break
         
         NLL.backward()

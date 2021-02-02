@@ -144,14 +144,17 @@ def optimDL1(parameters, data0, conMtx_temp, C, K, N, P, cls, learning_rate, max
     return conMtx_tran, wgt, muMtx, scale3D, logLikVec, -NLL
 
 # Final function to run algorithm for one dataset case
-def SECANT_CITE(data0, numCluster, cls, learning_rate=0.01, maxIter=500, earlystop = 0.0001, n_gmm_init=5, init_seed=2020):
+def SECANT_CITE(data0, numCluster, cls, uncertain = True, learning_rate=0.01, maxIter=500, earlystop = 0.0001, n_gmm_init=5, init_seed=2020):
     torch.manual_seed(init_seed)
     
-    C = len(torch.unique(cls))
     N = data0.size()[0]
     P = data0.size()[1] 
     K = sum(numCluster)
-
+    if uncertain:
+        C = len(torch.unique(cls))
+    else:
+        C = len(torch.unique(cls))+1
+        
     # concordance p vector
     p_init = torch.ones(K, dtype = torch.float32, device = device) *0.5
     pVec = dist.biject_to(dist.Binomial.arg_constraints['probs']).inv(p_init)
@@ -258,14 +261,18 @@ def optimDL2(parameters, data0, data1, conMtx_temp, C, K, P, N0, N1, cls, learni
     return conMtx_tran, wgt0, wgt1, muMtx, scale3D, logLikVec, -NLL
 
 # Final function to run algorithm for one dataset case
-def SECANT_JOINT(data0, data1, numCluster, cls, learning_rate=0.01, maxIter=500, earlystop = 0.0001, n_gmm_init=5, init_seed=2020):
+# Final function to run algorithm for one dataset case
+def SECANT_JOINT(data0, data1, numCluster, cls, uncertain = True, learning_rate=0.01, maxIter=500, earlystop = 0.0001, n_gmm_init=5, init_seed=2020):
     torch.manual_seed(init_seed)
     
     N0 = data0.size()[0]
     N1 = data1.size()[0]
     P = data0.size()[1] 
-    C = len(torch.unique(cls))
     K = sum(numCluster)
+    if uncertain:
+        C = len(torch.unique(cls))
+    else:
+        C = len(torch.unique(cls))+1
 
     # concordance p vector
     p_init = torch.ones(K, dtype = torch.float32) *0.5

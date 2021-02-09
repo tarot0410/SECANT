@@ -260,8 +260,7 @@ def optimDL2(parameters, data0, data1, conMtx_temp, C, K, P, N0, N1, cls, learni
     
     return conMtx_tran, wgt0, wgt1, muMtx, scale3D, logLikVec, -NLL
 
-# Final function to run algorithm for one dataset case
-# Final function to run algorithm for one dataset case
+# Final function to run algorithm for jointly analyzing CITE-seq and scRNA-seq data
 def SECANT_JOINT(data0, data1, numCluster, cls, uncertain = True, learning_rate=0.01, maxIter=500, earlystop = 0.0001, n_gmm_init=5, init_seed=2020):
     torch.manual_seed(init_seed)
     

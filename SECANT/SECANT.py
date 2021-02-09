@@ -316,8 +316,7 @@ def SECANT_JOINT(data0, data1, numCluster, cls, uncertain = True, learning_rate=
 
     preditADT_post = torch.mm(conMtxFinal, torch.exp(log_posteriors_final1))
     top2 = torch.topk(preditADT_post, 2, dim=0)
-    lbl_temp0 = top2[1]
-    post_temp0 = top2[0]
+
     lbl_temp1 = top2[1][0]
     lbl_temp2 = top2[1][1]
     lbl_temp1[lbl_temp1 == C-1] = lbl_temp2[lbl_temp1 == C-1]

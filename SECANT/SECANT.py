@@ -317,11 +317,7 @@ def SECANT_JOINT(data0, data1, numCluster, cls, uncertain = True, learning_rate=
     preditADT_post_mtx = torch.mm(conMtxFinal, torch.exp(log_posteriors_final1))
     top2 = torch.topk(preditADT_post_mtx, 2, dim=0)
 
-    lbl_temp1 = top2[1][0]
-    lbl_temp2 = top2[1][1]
-    lbl_temp1[lbl_temp1 == C-1] = lbl_temp2[lbl_temp1 == C-1]
-    preditADT_post = top2[0][0]
-    post_temp0 = top2[0][1]
-    preditADT_post[lbl_temp1 == C-1] = post_temp0[lbl_temp1 == C-1]
-    lbl_predict = lbl_temp1
-    return lbl0.view(N0), lbl1.view(N1), lbl_predict.view(N1), conMtxFinal, wgt0_out, wgt1_out, mu_out, scale3D_out, log_posteriors_final0, log_posteriors_final1, preditADT_post, preditADT_post_mtx, logLikVec, logLik_final
+    preditADT_post = torch.mm(conMtxFinal, torch.exp(log_posteriors_final1))
+    lbl_predict = torch.argmax(preditADT_post, 0)
+    
+    return lbl0.view(N0), lbl1.view(N1), lbl_predict.view(N1), conMtxFinal, wgt0_out, wgt1_out, mu_out, scale3D_out, log_posteriors_final0, log_posteriors_final1, preditADT_post, logLikVec, logLik_final

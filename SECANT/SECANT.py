@@ -7,6 +7,7 @@ from torch.autograd import Variable
 import torch.optim as optim
 import numpy as np
 import math
+import pandas as pd
 from sklearn.mixture import GaussianMixture
 
 if torch.cuda.is_available():  

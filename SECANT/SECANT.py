@@ -86,6 +86,10 @@ def initParam(data0, numCluster, C, K, P, cls, n_gmm_init, init_seed):
         # rearrange parameter indices
         _, ind_temp = torch.topk(ct_tt[c, subtr_temp], numC0)
         ind_original = subtr_temp[ind_temp]
+        
+        if ind_original.size == 1:
+            ind_original = [ind_original]
+        
         mu_init[ct_ind: (ct_ind + numC0)] = torch.tensor(gmm_best.means_[ind_original], dtype = torch.float32)
         cov_diag_init[ct_ind: (ct_ind + numC0)] = torch.tensor(gmm_best.covariances_[ind_original], dtype = torch.float32)
 

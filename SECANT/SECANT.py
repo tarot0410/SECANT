@@ -100,9 +100,16 @@ def fullLogLik1(data0, conMtx, wgt, muMtx, scale3D, cls, K, N):
     return temp + l1, log_posteriors.exp()
 
 # Set up optimization algorithm for one dataset case
-def optimDL1(parameters, data0, conMtx_temp, C, K, N, P, cls, learning_rate, maxIter, earlystop):
+def optimDL1(parameters, data0, conMtx_temp, C, K, N, P, cls, learning_rate, maxIter, earlystop, SGD):
     # Defines a SGD optimizer to update the parameters
-    optimizer = optim.Rprop(parameters, lr=learning_rate) 
+    if SGD == 'Rprop':
+        optimizer = optim.Rprop(parameters, lr=learning_rate)
+    elif SGD == 'Adam':
+        optimizer = optim.Adam(parameters, lr=learning_rate)
+    elif SGD == 'Adamax':
+        optimizer = optim.Adamax(parameters, lr=learning_rate)
+          
+    # optimizer = optim.Rprop(parameters, lr=learning_rate) 
     # optimizer = optim.Adam(parameters, lr=learning_rate)
     # optimizer = optim.Adamax(parameters, lr=learning_rate)
 
@@ -144,7 +151,7 @@ def optimDL1(parameters, data0, conMtx_temp, C, K, N, P, cls, learning_rate, max
     return conMtx_tran, wgt, muMtx, scale3D, logLikVec, -NLL
 
 # Final function to run algorithm for one dataset case
-def SECANT_CITE(data0, numCluster, cls, uncertain = True, learning_rate=0.01, maxIter=500, earlystop = 0.0001, n_gmm_init=5, init_seed=2020):
+def SECANT_CITE(data0, numCluster, cls, uncertain = True, learning_rate=0.01, maxIter=500, earlystop = 0.0001, n_gmm_init=5, init_seed=2020, SGD='Rprop'):
     torch.manual_seed(init_seed)
     
     N = data0.size()[0]
@@ -181,7 +188,7 @@ def SECANT_CITE(data0, numCluster, cls, uncertain = True, learning_rate=0.01, ma
 
     param = [pVec, muMtx, lowtri_mtx]
 
-    conMtxFinal, wgt_out, mu_out, scale3D_out, logLikVec, logLik_final = optimDL1(param, data0, conMtx_temp, C, K, N, P, cls, learning_rate, maxIter, earlystop)
+    conMtxFinal, wgt_out, mu_out, scale3D_out, logLikVec, logLik_final = optimDL1(param, data0, conMtx_temp, C, K, N, P, cls, learning_rate, maxIter, earlystop, SGD)
 
     logLik_temp = get_likelihoods(data0, mu_out, scale3D_out, log=True)
     log_posteriors_final = get_posteriors(logLik_temp, wgt_out)

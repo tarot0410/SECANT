@@ -101,15 +101,8 @@ def fullLogLik1(data0, conMtx, wgt, muMtx, scale3D, cls, K, N):
 
 # Set up optimization algorithm for one dataset case
 def optimDL1(parameters, data0, conMtx_temp, C, K, N, P, cls, learning_rate, maxIter, earlystop, SGD):
-    # Defines a SGD optimizer to update the parameters
-    if SGD == 'Rprop':
-        optimizer = optim.Rprop(parameters, lr=learning_rate)
-    elif SGD == 'Adam':
-        optimizer = optim.Adam(parameters, lr=learning_rate)
-    elif SGD == 'Adamax':
-        optimizer = optim.Adamax(parameters, lr=learning_rate)
-          
-    # optimizer = optim.Rprop(parameters, lr=learning_rate) 
+    # Defines a SGD optimizer to update the parameters          
+    optimizer = optim.Rprop(parameters, lr=learning_rate) 
     # optimizer = optim.Adam(parameters, lr=learning_rate)
     # optimizer = optim.Adamax(parameters, lr=learning_rate)
 
@@ -151,7 +144,7 @@ def optimDL1(parameters, data0, conMtx_temp, C, K, N, P, cls, learning_rate, max
     return conMtx_tran, wgt, muMtx, scale3D, logLikVec, -NLL
 
 # Final function to run algorithm for one dataset case
-def SECANT_CITE(data0, numCluster, cls, uncertain = True, learning_rate=0.01, maxIter=500, earlystop = 0.0001, n_gmm_init=5, init_seed=2020, SGD='Rprop'):
+def SECANT_CITE(data0, numCluster, cls, uncertain = True, learning_rate=0.01, maxIter=500, earlystop = 0.0001, n_gmm_init=5, init_seed=2020):
     torch.manual_seed(init_seed)
     
     N = data0.size()[0]
@@ -163,7 +156,7 @@ def SECANT_CITE(data0, numCluster, cls, uncertain = True, learning_rate=0.01, ma
         C = len(torch.unique(cls))+1
         
     # concordance p vector
-    p_init = torch.ones(K, dtype = torch.float32, device = device) *0.01
+    p_init = torch.ones(K, dtype = torch.float32, device = device) *0.5
     pVec = dist.biject_to(dist.Binomial.arg_constraints['probs']).inv(p_init)
     # clustering parameters
     conMtx_temp, mu_init, cov_diag_init = initParam(data0, numCluster, C, K, P, cls, n_gmm_init, init_seed)
@@ -188,7 +181,7 @@ def SECANT_CITE(data0, numCluster, cls, uncertain = True, learning_rate=0.01, ma
 
     param = [pVec, muMtx, lowtri_mtx]
 
-    conMtxFinal, wgt_out, mu_out, scale3D_out, logLikVec, logLik_final = optimDL1(param, data0, conMtx_temp, C, K, N, P, cls, learning_rate, maxIter, earlystop, SGD)
+    conMtxFinal, wgt_out, mu_out, scale3D_out, logLikVec, logLik_final = optimDL1(param, data0, conMtx_temp, C, K, N, P, cls, learning_rate, maxIter, earlystop)
 
     logLik_temp = get_likelihoods(data0, mu_out, scale3D_out, log=True)
     log_posteriors_final = get_posteriors(logLik_temp, wgt_out)

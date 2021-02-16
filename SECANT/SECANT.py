@@ -61,41 +61,30 @@ def initParam(data0, numCluster, C, K, P, cls, n_gmm_init, init_seed):
     mu_init = torch.empty(K, P, dtype = torch.float32)
     cov_diag_init = torch.empty(K, P, dtype = torch.float32)
 
-    # GMM init
-    gmm_vec = []
-    gmm_BIC = []
-    for i in range(n_gmm_init):
-        gmm0 = GaussianMixture(n_components=K, covariance_type='diag', reg_covar=1e-5, random_state=init_seed+i*100).fit(data0_np)
-        gmm_vec.append(gmm0)
-        gmm_BIC.append(gmm0.bic(data0_np))
-    val, idx = min((val, idx) for (idx, val) in enumerate(gmm_BIC))
-    gmm_best = gmm_vec[idx]
-
-    # Cross tab ADT label and GMM clustering
-    ct_pd = pd.crosstab(cls_np, gmm_best.fit_predict(data0_np))
-    ct_tt = torch.tensor(np.array(ct_pd))
-
-    adding_temp = np.empty(0)
-    subtr_temp = np.arange(K)
     ct_ind = 0
     for c in range(C-1):
         subData = data0_np[cls_np == c, :]
-        numC0 = int(numCluster[c])
+        numC0 = numCluster[c]
         # set up conMtx
         conMtx_temp[c, ct_ind: (ct_ind + numC0)] = 1
-        # rearrange parameter indices
-        _, ind_temp = torch.topk(ct_tt[c, subtr_temp], numC0)
-        ind_original = subtr_temp[ind_temp]
-        
-        if ind_original.size == 1:
-            ind_original = [ind_original]
-        
-        mu_init[ct_ind: (ct_ind + numC0)] = torch.tensor(gmm_best.means_[ind_original], dtype = torch.float32)
-        cov_diag_init[ct_ind: (ct_ind + numC0)] = torch.tensor(gmm_best.covariances_[ind_original], dtype = torch.float32)
+        # gmm for sub cluster
+        if numC0 > 1:
+            gmmSub_vec = []
+            gmmSub_BIC = []
+            for i in range(n_gmm_init):
+                gmmSub = GaussianMixture(n_components=numC0, covariance_type='diag', reg_covar=1e-5, random_state=init_seed+i*100).fit(subData)
+                gmmSub_vec.append(gmmSub)
+                gmmSub_BIC.append(gmmSub.bic(subData))
+            val, idx = min((val, idx) for (idx, val) in enumerate(gmmSub_BIC))
+            gmmSub_best = gmmSub_vec[idx]
+        else:
+            gmmSub_best = GaussianMixture(n_components=numC0, covariance_type='diag', reg_covar=1e-5, random_state=init_seed).fit(subData)
+        # set up cluster parameters
+        mu_init[ct_ind: (ct_ind + numC0)] = torch.tensor(gmmSub_best.means_, dtype = torch.float32)
+        cov_diag_init[ct_ind: (ct_ind + numC0)] = torch.tensor(gmmSub_best.covariances_, dtype = torch.float32)
 
-        adding_temp = np.concatenate((adding_temp, ind_original), 0)
-        subtr_temp = np.setdiff1d(subtr_temp, ind_original, assume_unique=True)
         ct_ind += numC0
+    
     return conMtx_temp, mu_init, cov_diag_init
 
 def fullLogLik1(data0, conMtx, wgt, muMtx, scale3D, cls, K, N):

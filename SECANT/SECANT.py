@@ -105,8 +105,9 @@ def optimDL1(parameters, data0, conMtx_temp, C, K, N, P, cls, learning_rate, max
     # Defines a SGD optimizer to update the parameters          
     # optimizer = optim.Rprop(parameters, lr=learning_rate) 
     # optimizer = optim.Adam(parameters, lr=learning_rate)
-    optimizer = optim.Adamax(parameters, lr=learning_rate)
-
+    # optimizer = optim.Adamax(parameters, lr=learning_rate)
+    optimizer = optim.Adadelta(parameters)
+    
     tril_indices = torch.tril_indices(row=P, col=P, offset=0)
     pVec, muMtx, lowtri_mtx = parameters
     logLikVec = np.zeros(maxIter)

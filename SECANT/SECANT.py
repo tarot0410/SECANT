@@ -103,9 +103,9 @@ def fullLogLik1(data0, conMtx, wgt, muMtx, scale3D, cls, K, N):
 # Set up optimization algorithm for one dataset case
 def optimDL1(parameters, data0, conMtx_temp, C, K, N, P, cls, learning_rate, maxIter, earlystop):
     # Defines a SGD optimizer to update the parameters          
-    optimizer = optim.Rprop(parameters, lr=learning_rate) 
+    # optimizer = optim.Rprop(parameters, lr=learning_rate) 
     # optimizer = optim.Adam(parameters, lr=learning_rate)
-    # optimizer = optim.Adamax(parameters, lr=learning_rate)
+    optimizer = optim.Adamax(parameters, lr=learning_rate)
 
     tril_indices = torch.tril_indices(row=P, col=P, offset=0)
     pVec, muMtx, lowtri_mtx = parameters

@@ -112,7 +112,7 @@ def optimDL1(parameters, data0, conMtx_temp, C, K, N, P, cls, learning_rate, max
     logLikVec = np.zeros(maxIter)
     wgt = torch.ones(K, dtype = torch.float32, device = device)/K
 
-    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.5)
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=30, gamma=0.5)
 
     for i in range(maxIter):
         optimizer.zero_grad()

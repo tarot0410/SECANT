@@ -99,53 +99,7 @@ def fullLogLik1(data0, conMtx, wgt, muMtx, scale3D, cls, K, N):
     tempMtx = torch.mm(conMtxFull, torch.exp(log_posteriors))
     temp = torch.trace(torch.clamp(tempMtx, min=1e-5).log())
     return temp + l1, log_posteriors.exp()
-
-# # Set up optimization algorithm for one dataset case
-# def optimDL1(parameters, data0, conMtx_temp, C, K, N, P, cls, learning_rate, maxIter, earlystop):
-#     # Defines a SGD optimizer to update the parameters
-#     optimizer = optim.Rprop(parameters, lr=learning_rate) 
-#     # optimizer = optim.Adam(parameters, lr=learning_rate)
-#     # optimizer = optim.Adamax(parameters, lr=learning_rate)
-
-#     tril_indices = torch.tril_indices(row=P, col=P, offset=0)
-#     pVec, muMtx, lowtri_mtx = parameters
-#     logLikVec = np.zeros(maxIter)
-#     wgt = torch.ones(K, dtype = torch.float32, device = device)/K
-
-#     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=30, gamma=0.5)
-
-#     for i in range(maxIter):
-#         optimizer.zero_grad()
-#         # set up transformed p vector and concordance matrix
-#         pVec_tran = dist.biject_to(dist.Binomial.arg_constraints['probs'])(pVec)
-#         conMtx_tran = torch.empty(C, K, dtype = torch.float32, device = device)
-#         conMtx_tran[0:(C-1),:] = conMtx_temp*pVec_tran
-#         conMtx_tran[C-1,:] = 1-pVec_tran
-
-#         # set up transformed cov3D matrix
-#         scale3D = torch.zeros(K, P, P, dtype = torch.float32, device = device)
-#         scale3D[:, tril_indices[0], tril_indices[1]] = lowtri_mtx
-#         scale3D[:, range(P), range(P)] = abs(scale3D[:, range(P), range(P)])
-        
-#         # Define loss function xMtx, piVec, alphaMtx, K
-#         LL, z = fullLogLik1(data0, conMtx_tran, wgt, muMtx, scale3D, cls, K, N)
-#         NLL = -LL
-#         logLikVec[i] = LL
-#         wgt = (z.sum(1)/N).detach()
-
-#         if i % 50 == 0:
-#             # print(i, "th iter...")
-#             if (i > 0) &  (abs((logLikVec[i]-logLikVec[i-50]-1e-5)/(logLikVec[i-50]+1e-5)) < earlystop):
-#                 NLL.backward()
-#                 optimizer.step()
-#                 break
-
-#         NLL.backward()
-#         optimizer.step()
-#         scheduler.step()
-        
-#     return conMtx_tran, wgt, muMtx, scale3D, logLikVec, -NLL
-  
+ 
 # Set up optimization algorithm for one dataset case
 def optimDL1(parameters, data0, conMtx_temp, C, K, N, P, cls, learning_rate, maxIter, earlystop):
     # Defines a SGD optimizer to update the parameters          

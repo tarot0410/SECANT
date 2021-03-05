@@ -145,8 +145,8 @@ def optimDL1(parameters, data0, conMtx_temp, C, K, N, P, cls, learning_rate, max
     return conMtx_tran, wgt, muMtx, scale3D, logLikVec, -NLL
 
 class output_CITE:
-  def __init__(self, lbl_out, conMtxFinal, wgt_out, mu_out, scale3D_out, log_posteriors_final, logLikVec, logLik_final):
-      self.lbl_out = lbl_out
+  def __init__(self, lbl, conMtxFinal, wgt_out, mu_out, scale3D_out, log_posteriors_final, logLikVec, logLik_final):
+      self.lbl = lbl
       self.conMtxFinal = conMtxFinal
       self.wgt_out = wgt_out
       self.mu_out = mu_out
@@ -277,10 +277,10 @@ def optimDL2(parameters, data0, data1, conMtx_temp, C, K, P, N0, N1, cls, learni
     return conMtx_tran, wgt0, wgt1, muMtx, scale3D, logLikVec, -NLL
 
 class output_JOINT:
-  def __init__(self, lbl0_out, lbl1_out, lbl_predict_out, conMtxFinal, wgt0_out, wgt1_out, mu_out, scale3D_out, log_posteriors_final0, log_posteriors_final1, preditADT_post,logLikVec, logLik_final):
-      self.lbl0_out = lbl0_out
-      self.lbl1_out = lbl1_out
-      self.lbl_predict_out = lbl_predict_out
+  def __init__(self, lbl0, lbl1, lbl_predict, conMtxFinal, wgt0_out, wgt1_out, mu_out, scale3D_out, log_posteriors_final0, log_posteriors_final1, preditADT_post,logLikVec, logLik_final):
+      self.lbl0 = lbl0
+      self.lbl1 = lbl1
+      self.lbl_predict = lbl_predict
       self.conMtxFinal = conMtxFinal
       self.wgt0_out = wgt0_out
       self.wgt1_out = wgt1_out

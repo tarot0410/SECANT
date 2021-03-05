@@ -145,9 +145,9 @@ def optimDL1(parameters, data0, conMtx_temp, C, K, N, P, cls, learning_rate, max
     return conMtx_tran, wgt, muMtx, scale3D, logLikVec, -NLL
 
 class output_CITE:
-  def __init__(self, lbl_out, conMtxFianl, wgt_out, mu_out, scale3D_out, log_posteriors_final, logLikVec, logLik_final):
+  def __init__(self, lbl_out, conMtxFinal, wgt_out, mu_out, scale3D_out, log_posteriors_final, logLikVec, logLik_final):
       self.lbl_out = lbl_out
-      self.conMtxFianl = conMtxFianl
+      self.conMtxFinal = conMtxFinal
       self.wgt_out = wgt_out
       self.mu_out = mu_out
       self.scale3D_out = scale3D_out
@@ -277,11 +277,11 @@ def optimDL2(parameters, data0, data1, conMtx_temp, C, K, P, N0, N1, cls, learni
     return conMtx_tran, wgt0, wgt1, muMtx, scale3D, logLikVec, -NLL
 
 class output_JOINT:
-  def __init__(self, lbl0_out, lbl1_out, lbl_predict_out, conMtxFianl, wgt0_out, wgt1_out, mu_out, scale3D_out, log_posteriors_final0, log_posteriors_final1, preditADT_post,logLikVec, logLik_final):
+  def __init__(self, lbl0_out, lbl1_out, lbl_predict_out, conMtxFinal, wgt0_out, wgt1_out, mu_out, scale3D_out, log_posteriors_final0, log_posteriors_final1, preditADT_post,logLikVec, logLik_final):
       self.lbl0_out = lbl0_out
       self.lbl1_out = lbl1_out
       self.lbl_predict_out = lbl_predict_out
-      self.conMtxFianl = conMtxFianl
+      self.conMtxFinal = conMtxFinal
       self.wgt0_out = wgt0_out
       self.wgt1_out = wgt1_out
       self.mu_out = mu_out
@@ -357,6 +357,6 @@ def SECANT_JOINT(data0, data1, numCluster, cls, uncertain = True, learning_rate=
     lbl1_out = lbl1.view(N1)
     lbl_predict_out = lbl_predict.view(N1)
     
-    out = output_JOINT(lbl0_out, lbl1_out, lbl_predict_out, conMtxFianl, wgt0_out, wgt1_out, mu_out, scale3D_out, log_posteriors_final0, log_posteriors_final1, preditADT_post,logLikVec, logLik_final)
+    out = output_JOINT(lbl0_out, lbl1_out, lbl_predict_out, conMtxFinal, wgt0_out, wgt1_out, mu_out, scale3D_out, log_posteriors_final0, log_posteriors_final1, preditADT_post,logLikVec, logLik_final)
     
     return out

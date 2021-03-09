@@ -169,7 +169,7 @@ def SECANT_CITE(data0, numCluster, cls, uncertain = True, learning_rate=0.01, ma
         C = len(torch.unique(cls))+1
         
     # concordance p vector
-    p_init = torch.ones(K, dtype = torch.float32, device = device) *0.1
+    p_init = torch.ones(K, dtype = torch.float32, device = device) *0.5
     pVec = dist.biject_to(dist.Binomial.arg_constraints['probs']).inv(p_init)
     # clustering parameters
     conMtx_temp, mu_init, cov_diag_init = initParam(data0, numCluster, C, K, P, cls, n_gmm_init, init_seed)

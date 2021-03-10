@@ -20,11 +20,11 @@ Here, we demonstrate this functionality with an PBMC10k data, a bone marrow data
   	<img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 	</a>
 	
-- Bone marrow [SECANT_GitHub_Bone_marrow.ipynb](https://github.com/tarot0410/SECANT/blob/main/example/SECANT_GitHub_Bone_marrow.ipynb)<a href="https://colab.research.google.com/drive/1azjJhj6DkE0SIJ65sNK8F8MuDxdaw0RD?usp=sharing">
+- Bone marrow: [SECANT_GitHub_Bone_marrow.ipynb](https://github.com/tarot0410/SECANT/blob/main/example/SECANT_GitHub_Bone_marrow.ipynb)<a href="https://colab.research.google.com/drive/1azjJhj6DkE0SIJ65sNK8F8MuDxdaw0RD?usp=sharing">
   	<img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 	</a>
 
-- Lung [SECANT_GitHub_Upper_lobe_lung.ipynb](https://github.com/tarot0410/SECANT/blob/main/example/SECANT_GitHub_Upper_lobe_lung.ipynb)<a href="https://colab.research.google.com/drive/1wHucmHyWqgGzH22aGPA2-S1ElfVrMOlD?usp=sharing">
+- Lung: [SECANT_GitHub_Upper_lobe_lung.ipynb](https://github.com/tarot0410/SECANT/blob/main/example/SECANT_GitHub_Upper_lobe_lung.ipynb)<a href="https://colab.research.google.com/drive/1wHucmHyWqgGzH22aGPA2-S1ElfVrMOlD?usp=sharing">
   	<img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 	</a>
 
@@ -36,7 +36,8 @@ Here we demonstrate how to joint analyze CITE-seq and scRNA-seq datasets with SE
 	</a>
 
 ### Search for best configuration
-It is very important to first search for the best configuration before running SECANT. Here is an example [SECANT_GitHub_Search_Best_Config.ipynb] (https://github.com/tarot0410/SECANT/blob/main/example/SECANT_GitHub_Search_Best_Config.ipynb)
+It is very important to first search for the best configuration before running SECANT. Here is an example 
+[SECANT_GitHub_Search_Best_Config.ipynb] (https://github.com/tarot0410/SECANT/blob/main/example/SECANT_GitHub_Search_Best_Config.ipynb)
 
 # Datasets
 

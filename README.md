@@ -48,7 +48,7 @@ Due to computational burden, we suggest running this step in parallel on a serve
 
 ### Simulation studies
 
-<a href="https://colab.research.google.com/drive/1elVhNgFm5WCy_2cYs1mIpXxRvEgr0S9t?usp=sharing">
+[SECANT_GitHub_simulation.ipynb](https://github.com/tarot0410/SECANT/blob/main/example/SECANT_GitHub_simulation.ipynb)<a href="https://colab.research.google.com/drive/1elVhNgFm5WCy_2cYs1mIpXxRvEgr0S9t?usp=sharing">
   	<img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 	</a>
 

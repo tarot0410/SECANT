@@ -36,8 +36,7 @@ Here we demonstrate how to joint analyze CITE-seq and scRNA-seq datasets with SE
 	</a>
 
 ### Search for best configuration
-It is very important to first search for the best configuration before running SECANT. Here is an example 
-[SECANT_GitHub_Search_Best_Config.ipynb] (https://github.com/tarot0410/SECANT/blob/main/example/SECANT_GitHub_Search_Best_Config.ipynb)
+It is very important to first search for the best configuration before running SECANT. Here is an example [SECANT_GitHub_Search_Best_Config.ipynb](https://github.com/tarot0410/SECANT/blob/main/example/SECANT_GitHub_Search_Best_Config.ipynb)
 
 # Datasets
 

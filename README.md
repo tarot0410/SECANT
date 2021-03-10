@@ -8,6 +8,8 @@ SECANT can be used to analyze CITE-seq data, or jointly analyze CITE-seq and scR
 - 3) fully utilizing cells with uncertain or missing cell type labels to increase performance
 - 4) accurate prediction of confident cell types identified from surface protein data for scRNA-seq data
 
+![workflow](https://user-images.githubusercontent.com/50209236/110571354-757f9280-8125-11eb-9cb8-93c330020c6d.png)
+
 In general, the input of SECANT include:
 - 1) ADT confident cell type labels L, where L ranges from 0 to C. Each unique value refers to one confident cell type, such as B cells, Monocytes. The maximum value C indicates uncertain cell type (e.g., cells on the boundary of different cell types in a gating plot)
 - 2) RNA data after dimension reduction (e.g., scVI or PCA)
@@ -40,7 +42,15 @@ Here we demonstrate how to jointly analyze CITE-seq and scRNA-seq datasets with 
 	</a>
 
 ### Search for the best configuration of concordance matrix in a data-driven manner
-Due to computational burden, we suggest running this step in parallel on a server with multiple CPUs or GPUs. Here is an example [SECANT_GitHub_Search_Best_Config.ipynb](https://github.com/tarot0410/SECANT/blob/main/example/SECANT_GitHub_Search_Best_Config.ipynb)
+Due to computational burden, we suggest running this step in parallel on a server with multiple CPUs or GPUs. Here is an example [SECANT_GitHub_Search_Best_Config.ipynb](https://github.com/tarot0410/SECANT/blob/main/example/SECANT_GitHub_Search_Best_Config.ipynb) <a href="https://colab.research.google.com/drive/1NpVeDP6GP7HYCleLPTnsE-4Qi4QVFfVh?usp=sharing">
+  	<img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+	</a>
+
+### Simulation studies
+
+<a href="https://colab.research.google.com/drive/1elVhNgFm5WCy_2cYs1mIpXxRvEgr0S9t?usp=sharing">
+  	<img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+	</a>
 
 # Datasets
 
@@ -84,7 +94,7 @@ A collection of datasets are available with SECANT. All datasets stored in this 
         <td>
         Human upper lobe lung (on GEO, use DropletUtils for pre-processing)
         </td>
-        <td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM3909673a">source</a>
+        <td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM3909673">source</a>
     </tr>
 </table>
 

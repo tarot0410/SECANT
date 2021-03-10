@@ -10,6 +10,7 @@ SECANT can be used to analyze CITE-seq data, or jointly analyze CITE-seq and scR
 
 
 Paper: will be released soon
+
 ## Get Started
 
 ### Analyzing CITE-seq data
@@ -28,6 +29,11 @@ Here, we demonstrate this functionality with an PBMC10k data, a bone marrow data
 	</a>
 
 ### Joint analyzing CITE-seq and scRNA-seq data
+Here we demonstrate how to joint analyze CITE-seq and scRNA-seq datasets with SECANT using two CITE-seq datasets of peripheral blood mononuclear cells from 10x Genomics. We use the whole 10k dataset while we hold-out the proteins of the 5k dataset. We will store the original values to validate our results.
+
+<a href="https://colab.research.google.com/drive/1J8pZUVEApu7shqzFPweCchCvZt8tHR52?usp=sharing">
+  	<img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+	</a>
 
 
 ## Datasets

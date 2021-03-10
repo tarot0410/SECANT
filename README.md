@@ -27,6 +27,11 @@ Torch, sklearn, umap and all of their respective dependencies.
 
 ## Example (using simulated data)
 
+<a href="https://colab.research.google.com/drive/10FN1b_og_Sb3InUgrtjpwOl7YBLsPk7t?usp=sharing">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a>
+
+
 First, import the pacakge:
 
     from SECANT import *

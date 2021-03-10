@@ -116,4 +116,4 @@ Download a local copy of SECANT and install from the directory:
 Torch, sklearn, umap, pandas, numpy and all of their respective dependencies. 
 
 ### Paper
-**Wang X**, Xu Z, Zhou X, Zhang Y, Huang H, Ding Y, Duerr RH, Chen W. SECANT: a biology-guided semi-supervised method for clustering, classification, and annotation of single-cell multi-omics. [*bioRxiv*. 2020 Jan 1.](https://www.biorxiv.org/content/10.1101/2020.11.06.371849v1)
+**Wang X**, Xu Z, Zhou X, Zhang Y, Huang H, Ding Y, Duerr RH, Chen W. SECANT: a biology-guided semi-supervised method for clustering, classification, and annotation of single-cell multi-omics. [*bioRxiv*. 2020](https://www.biorxiv.org/content/10.1101/2020.11.06.371849v1)

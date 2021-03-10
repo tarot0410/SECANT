@@ -15,26 +15,28 @@ Paper: will be released soon
 
 ### Analyzing CITE-seq data
 
-Here, we demonstrate this functionality with an PBMC10k data, a bone marrow data and a lung data. The same pipeline would generally be used to analyze any CITE-seq dataset. You can find the code in the example folder or you can run it on Google Colab:
-- PBMC10k [SECANT_GitHub_10X10k_PBMC.ipynb](https://github.com/tarot0410/SECANT/blob/main/example/SECANT_GitHub_10X10k_PBMC.ipynb)	<a href="https://colab.research.google.com/drive/10FN1b_og_Sb3InUgrtjpwOl7YBLsPk7t?usp=sharing">
+Here, we demonstrate this functionality with an PBMC10k data, a bone marrow data and a lung data. The same pipeline would generally be used to analyze any CITE-seq dataset. 
+- PBMC10k: [SECANT_GitHub_10X10k_PBMC.ipynb](https://github.com/tarot0410/SECANT/blob/main/example/SECANT_GitHub_10X10k_PBMC.ipynb)	<a href="https://colab.research.google.com/drive/10FN1b_og_Sb3InUgrtjpwOl7YBLsPk7t?usp=sharing">
   	<img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 	</a>
 	
-- Bone marrow <a href="https://colab.research.google.com/drive/1azjJhj6DkE0SIJ65sNK8F8MuDxdaw0RD?usp=sharing">
+- Bone marrow [SECANT_GitHub_Bone_marrow.ipynb](https://github.com/tarot0410/SECANT/blob/main/example/SECANT_GitHub_Bone_marrow.ipynb)<a href="https://colab.research.google.com/drive/1azjJhj6DkE0SIJ65sNK8F8MuDxdaw0RD?usp=sharing">
   	<img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 	</a>
 
-- Lung <a href="https://colab.research.google.com/drive/1wHucmHyWqgGzH22aGPA2-S1ElfVrMOlD?usp=sharing">
+- Lung [SECANT_GitHub_Upper_lobe_lung.ipynb](https://github.com/tarot0410/SECANT/blob/main/example/SECANT_GitHub_Upper_lobe_lung.ipynb)<a href="https://colab.research.google.com/drive/1wHucmHyWqgGzH22aGPA2-S1ElfVrMOlD?usp=sharing">
   	<img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 	</a>
 
 ### Joint analyzing CITE-seq and scRNA-seq data
 Here we demonstrate how to joint analyze CITE-seq and scRNA-seq datasets with SECANT using two CITE-seq datasets of peripheral blood mononuclear cells from 10x Genomics. We use the whole 10k dataset while we hold-out the proteins of the 5k dataset. We will store the original values to validate our results.
 
-<a href="https://colab.research.google.com/drive/1J8pZUVEApu7shqzFPweCchCvZt8tHR52?usp=sharing">
+[SECANT_GitHub_Joint_10X.ipynb](https://github.com/tarot0410/SECANT/blob/main/example/SECANT_GitHub_Joint_10X.ipynb)<a href="https://colab.research.google.com/drive/1J8pZUVEApu7shqzFPweCchCvZt8tHR52?usp=sharing">
   	<img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 	</a>
 
+### Search for best configuration
+It is very important to first search for the best configuration before running SECANT. Here is an example [SECANT_GitHub_Search_Best_Config.ipynb] (https://github.com/tarot0410/SECANT/blob/main/example/SECANT_GitHub_Search_Best_Config.ipynbb)
 
 ## Datasets
 

@@ -10,28 +10,20 @@ SECANT can be used to analyze CITE-seq data, or jointly analyze CITE-seq and scR
 
 
 Paper: will be released soon
+## Get Started
 
-## Installation:
+### Analyzing CITE-seq data
 
-### From source
-
-Download a local copy of SECANT and install from the directory:
-
-	git clone https://github.com/tarot0410/SECANT.git
-	cd SECANT
-	pip install .
-
-### Dependencies
-
-Torch, sklearn, umap and all of their respective dependencies. 
-
-## Example (using simulated data)
-
-<a href="https://colab.research.google.com/drive/10FN1b_og_Sb3InUgrtjpwOl7YBLsPk7t?usp=sharing">
+Here, we demonstrate this functionality with an PBMC10k data, a bone marrow data and a lung data. The same pipeline would generally be used to analyze any CITE-seq dataset. You can find the code in example folder or you can run it on Google Colab:
+- PBMC10k <a href="https://colab.research.google.com/drive/10FN1b_og_Sb3InUgrtjpwOl7YBLsPk7t?usp=sharing">
   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 </a>
+- Bone marrow
+- Lung
 
 
+
+## Example (using simulated data)
 First, import the pacakge:
 
     from SECANT import *
@@ -159,6 +151,20 @@ Visualize SECANT clustering results using UMAP plot (colored by cluster label fr
     legend2 = plt.legend(handles=scatter2.legend_elements()[0],labels=mylabel,loc="upper right", title="Clusters",bbox_to_anchor=(1.17, 1.02))
 
 ![plot3](https://user-images.githubusercontent.com/50209236/96535222-55773180-125f-11eb-83b8-3421621abfa7.png)
+
+## Installation:
+
+### From source
+
+Download a local copy of SECANT and install from the directory:
+
+	git clone https://github.com/tarot0410/SECANT.git
+	cd SECANT
+	pip install .
+
+### Dependencies
+
+Torch, sklearn, umap and all of their respective dependencies. 
 
 ## Function: SECANT_CITE
 

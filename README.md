@@ -10,6 +10,75 @@ SECANT can be used to analyze CITE-seq data, or jointly analyze CITE-seq and scR
 
 
 Paper: will be released soon
+## Get Started
+
+### Analyzing CITE-seq data
+
+Here, we demonstrate this functionality with an PBMC10k data, a bone marrow data and a lung data. The same pipeline would generally be used to analyze any CITE-seq dataset. You can find the code in the example folder or you can run it on Google Colab:
+- PBMC10k 	<a href="https://colab.research.google.com/drive/10FN1b_og_Sb3InUgrtjpwOl7YBLsPk7t?usp=sharing">
+  	<img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+	</a>
+	
+- Bone marrow <a href="https://colab.research.google.com/drive/1azjJhj6DkE0SIJ65sNK8F8MuDxdaw0RD?usp=sharing">
+  	<img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+	</a>
+
+- Lung <a href="https://colab.research.google.com/drive/1wHucmHyWqgGzH22aGPA2-S1ElfVrMOlD?usp=sharing">
+  	<img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+	</a>
+
+### Joint analyzing CITE-seq and scRNA-seq data
+
+
+## Datasets
+
+A collection of datasets are available with SECANT. All the data are pre-processing by scVI. 
+
+### Public data:
+<table>
+    <tr>
+        <th>Dataset</th>
+        <th>Size</th>
+        <th>Dataset</th>
+        <th>Data source</th>
+    </tr>
+    <tr>
+        <td>10X10k</td>
+        <td>7xxx</td>
+        <td>
+        Peripheral blood mononuclear cells publicly available from 10X Genomics 
+        </td>
+        <td><a href="https://support.10xgenomics.com/single-cell-gene-expression/datasets/3.0.0/pbmc_10k_protein_v3">source</a>
+    </tr>
+    <tr>
+        <td>10X5k</td>
+        <td>4xxx</td>
+        <td>
+        Peripheral blood mononuclear cells publicly available from 10X Genomics 
+        </td>
+        <td><a href="https://support.10xgenomics.com/single-cell-gene-expression/datasets/3.0.2/5k_pbmc_v3_nextgem">source</a>
+    </tr>
+    <tr>
+        <td>bone marrow</td>
+        <td>xxx</td>
+        <td>
+        Bone marrow data
+        </td>
+        <td><a href="https://satijalab.org/seurat/articles/weighted_nearest_neighbor_analysis.html">source</a>
+    </tr>
+    <tr>
+        <td>lung</td>
+        <td>xxxx</td>
+        <td>
+        lung
+        </td>
+        <td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM3909673a">source</a>
+    </tr>
+</table>
+
+### In-house data:
+In-house data will be available soon.
+
 
 ## Installation:
 
@@ -24,136 +93,6 @@ Download a local copy of SECANT and install from the directory:
 ### Dependencies
 
 Torch, sklearn, umap and all of their respective dependencies. 
-
-## Example (using simulated data)
-
-First, import the pacakge:
-
-    from SECANT import *
-
-Read in the datasets:
-    
-    ### Input data for SECANT
-    # Input 1 (RNA data from CITE-seq after dimension reduction, cell*feature)
-    data0 = pd.read_csv("./simulated_data/data0.csv",header=None)
-    
-    # Input 2 (ADT cell type label, integer from 0 to C, where C refers to uncertain cell type if it appears)
-    cls_np_0 = pd.read_csv("./simulated_data/cls_np_0.csv",header=None,squeeze=True)
-    
-    # Optional input (aditional RNA data from scRNA-seq, similar to Input 1, for joint analysis)
-    data1 = pd.read_csv("./simulated_data/data1.csv",header=None)
-    
-    ### Simulated truth data used to assess performance (not used as input)
-    # true cell cluster label for RNA data from CITE-seq
-    clusterLbl_np_0 = pd.read_csv("./simulated_data/clusterLbl_np_0.csv",header=None,squeeze=True)
-    
-    # true ADT cell type label for the additional RNA data (optional, for joint analysis)
-    cls_np_1 = pd.read_csv("./simulated_data/cls_np_1.csv",header=None,squeeze=True)
-    
-    # true cell cluster label for the additional RNA data (optional, for joint analysis)
-    clusterLbl_np_1 = pd.read_csv("./simulated_data/clusterLbl_np_1.csv",header=None,squeeze=True)
-
-Here, for input data, data0 can be viewed as the RNA data from CITE-seq, data1 can be viewed as the optional RNA data from scRNA-seq, and cls_np_0 can be viewed as the confident cell types label from ADT data. For datasets used to assess method performance, cls_np_1 is the simulated confident cell types for scRNA-seq data, clusterLbl_np_0 is the true cluster labels for data from CITE-seq, and clusterLbl_np_1 is the true cluster labels for data from scRNA-seq.
-
-Next, convert the datasets format for SECANT:
-
-    data0 = df_to_tensor(data0)
-    data1 = df_to_tensor(data1)
-    cls_np_0 = cls_np_0.to_numpy()
-    cls_np_1 = cls_np_1.to_numpy()
-    clusterLbl_np_0 = clusterLbl_np_0.to_numpy()
-    clusterLbl_np_1 = clusterLbl_np_1.to_numpy()
-
-Check cross table for correspondance of simulated ADT cell type and RNA cell cluster
-    
-    pd.crosstab(cls_np_0, clusterLbl_np_0, rownames=["true ADT label"], colnames=["true cluster label"])
-
-![plot0](https://user-images.githubusercontent.com/50209236/96535220-5314d780-125f-11eb-80aa-24458fcea842.png)
-
-In this simulated data, there are 4 confident ADT cell types (label 0-3), and ADT label 4 refers to uncertain cell type (proportion set to be 20%). Further, there is 1 cluster for confident cell type 0, 2 clusters for type 1 and 2, and 3 clusters for type 3. The total number of clusters is 8. The cluster proportions are set to be (0.1, 0.1, 0.2, 0.2, 0.2, 0.05, 0.05, 0.1). Cluster-specific parameters are estimated from real data.
-
-Construct UMAP plot for visualization
-
-    reducer = umap.UMAP(random_state=42)
-    embedding0 = reducer.fit_transform(data0.cpu())
-    print(embedding0.shape)
-
-Visualize simulated data using UMAP plot (colored by simulated ADT label)
-
-    scatter0 = plt.scatter(embedding0[:, 0],
-            embedding0[:, 1],
-            c=cls_np_0, s=1, cmap='Spectral')
-    plt.title('', fontsize=15)
-    mylabel=('Type 1', 'Type 2', 'Type 3','Type 4','Uncertain')
-    legend0 = plt.legend(handles=scatter0.legend_elements()[0],labels=mylabel,loc="upper right", title="Cell Type (ADT)",bbox_to_anchor=(1.35, 1))
-
-![plot1](https://user-images.githubusercontent.com/50209236/96532447-efd47680-1259-11eb-8518-c71c5c9d6758.png)
-
-Visualize simulated data using UMAP plot (colored by simulated cluster label)
-
-    scatter1 = plt.scatter(embedding0[:, 0],
-    	    embedding0[:, 1],
-            c= clusterLbl_np_0, s=0.2, cmap='Spectral')
-    plt.title('', fontsize=15)
-    mylabel=('1', '2', '3', '4', '5' ,'6', '7', '8')
-    legend1 = plt.legend(handles=scatter1.legend_elements()[0],labels=mylabel,loc="upper right", title="Clusters",bbox_to_anchor=(1.35, 1))
-
-![plot2](https://user-images.githubusercontent.com/50209236/96532552-1db9bb00-125a-11eb-955c-52d0c376ba76.png)
-
-Run SECANT (for analyzing CITE-seq data only):
-
-First specify the number of clusters for each confident cell types:
-
-    numCluster = [1,2,2,3] 
-    K = sum(numCluster)
-    
-Here, 1 in numCluster stands for 1 cluster for confident cell type 0, 2 for 2 clusters for type 1 and 2, and 3 for 3 clusters for type 3. Therefore, the total number of clusters is 8.
-
-Now run SECANT
-    
-    device = get_device() # use GPU if available
-    outLbl, conMtxFinal0, tauVecFinal0, muMtxFinal0, cov3DFinal0, loglikFinal0 = SECANT_CITE(data0, numCluster, K, cls_np_0, uncertain = True, learning_rate=0.01, nIter=100, init_seed = 1)
-
-Compute ARI and AMI for clustering performance:
-
-    ARI_score= adjusted_rand_score(outLbl, clusterLbl_np_0)
-    AMI_score= adjusted_mutual_info_score(outLbl, clusterLbl_np_0)
-
-Print the results:
-
-    print("loglik  =", loglikFinal0.cpu().data.numpy()) 
-    loglik  = -18916.006562894596
-    
-    print("conMtx:")
-    print(np.around(conMtxFinal0.cpu().data.numpy(),3))
-    conMtx:
-    [[0.82  0.    0.    0.    0.    0.    0.    0.   ]
-    [0.    0.809 0.79  0.    0.    0.    0.    0.   ]
-    [0.    0.    0.    0.776 0.764 0.    0.    0.   ]
-    [0.    0.    0.    0.    0.    0.772 0.792 0.785]
-    [0.18  0.191 0.21  0.224 0.236 0.228 0.208 0.215]]
-    
-    print("tauVec0:")
-    print(np.around(tauVecFinal0.cpu().data.numpy(),3))
-    tauVec0:
-    [0.1   0.1   0.2   0.202 0.2   0.05  0.099 0.049]
-    
-    print("ARI =", ARI_score)
-    ARI = 0.9492018730675573
-    
-    print("AMI =", AMI_score)
-    AMI = 0.9457362239875382
-
-Visualize SECANT clustering results using UMAP plot (colored by cluster label from SECANT)
-
-    scatter2 = plt.scatter(embedding0[:, 0],
-            embedding0[:, 1],
-            c=outLbl, s=0.2, cmap='Spectral')
-    plt.title('', fontsize=15)
-    mylabel=('1', '2', '3', '4', '5' ,'6', '7', '8')
-    legend2 = plt.legend(handles=scatter2.legend_elements()[0],labels=mylabel,loc="upper right", title="Clusters",bbox_to_anchor=(1.17, 1.02))
-
-![plot3](https://user-images.githubusercontent.com/50209236/96535222-55773180-125f-11eb-83b8-3421621abfa7.png)
 
 ## Function: SECANT_CITE
 

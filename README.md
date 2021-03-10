@@ -32,7 +32,7 @@ Here, we demonstrate this functionality with an PBMC10k data, a bone marrow data
 
 ## Datasets
 
-A collection of datasets are available with SECANT.
+A collection of datasets are available with SECANT. All the data are pre-processing by scVI. 
 
 ### Public data:
 <table>
@@ -43,74 +43,41 @@ A collection of datasets are available with SECANT.
         <th>Data source</th>
     </tr>
     <tr>
-        <td>flchain</td>
-        <td>6,524</td>
+        <td>10X10k</td>
+        <td>7xxx</td>
         <td>
-        The Assay of Serum Free Light Chain (FLCHAIN) dataset. See 
-        <a href="#references">[1]</a> for preprocessing.
+        Peripheral blood mononuclear cells publicly available from 10X Genomics 
         </td>
-        <td><a href="https://github.com/vincentarelbundock/Rdatasets">source</a>
+        <td><a href="https://support.10xgenomics.com/single-cell-gene-expression/datasets/3.0.0/pbmc_10k_protein_v3">source</a>
     </tr>
     <tr>
-        <td>gbsg</td>
-        <td>2,232</td>
+        <td>10X5k</td>
+        <td>4xxx</td>
         <td>
-        The Rotterdam & German Breast Cancer Study Group.
-        See <a href="#references">[2]</a> for details.
+        Peripheral blood mononuclear cells publicly available from 10X Genomics 
         </td>
-        <td><a href="https://github.com/jaredleekatzman/DeepSurv/tree/master/experiments/data">source</a>
+        <td><a href="https://support.10xgenomics.com/single-cell-gene-expression/datasets/3.0.2/5k_pbmc_v3_nextgem">source</a>
     </tr>
     <tr>
-        <td>kkbox</td>
-        <td>2,814,735</td>
+        <td>bone marrow</td>
+        <td>xxx</td>
         <td>
-        A survival dataset created from the WSDM - KKBox's Churn Prediction Challenge 2017 with administrative censoring.
-        See <a href="#references">[1]</a> and <a href="#references">[15]</a> for details.
-        Compared to kkbox_v1, this data set has more covariates and censoring times.
-        Note: You need 
-        <a href="https://github.com/Kaggle/kaggle-api#api-credentials">Kaggle credentials</a> to access the dataset.
+        Bone marrow data
         </td>
-        <td><a href="https://www.kaggle.com/c/kkbox-churn-prediction-challenge/data">source</a>
+        <td><a href="https://satijalab.org/seurat/articles/weighted_nearest_neighbor_analysis.html">source</a>
     </tr>
     <tr>
-        <td>kkbox_v1</td>
-        <td>2,646,746</td>
+        <td>lung</td>
+        <td>xxxx</td>
         <td>
-        A survival dataset created from the WSDM - KKBox's Churn Prediction Challenge 2017. 
-        See <a href="#references">[1]</a> for details.
-        This is not the preferred version of this data set. Use kkbox instead.
-        Note: You need 
-        <a href="https://github.com/Kaggle/kaggle-api#api-credentials">Kaggle credentials</a> to access the dataset.
+        lung
         </td>
-        <td><a href="https://www.kaggle.com/c/kkbox-churn-prediction-challenge/data">source</a>
-    </tr>
-    <tr>
-        <td>metabric</td>
-        <td>1,904</td>
-        <td>
-        The Molecular Taxonomy of Breast Cancer International Consortium (METABRIC).
-        See <a href="#references">[2]</a> for details.
-        </td>
-        <td><a href="https://github.com/jaredleekatzman/DeepSurv/tree/master/experiments/data">source</a>
-    </tr>
-    <tr>
-        <td>nwtco</td>
-        <td>4,028</td>
-        <td>
-        Data from the National Wilm's Tumor (NWTCO).
-        </td>
-        <td><a href="https://github.com/vincentarelbundock/Rdatasets">source</a>
-    </tr>
-    <tr>
-        <td>support</td>
-        <td>8,873</td>
-        <td>
-        Study to Understand Prognoses Preferences Outcomes and Risks of Treatment (SUPPORT).
-        See <a href="#references">[2]</a> for details.
-        </td>
-        <td><a href="https://github.com/jaredleekatzman/DeepSurv/tree/master/experiments/data">source</a>
+        <td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM3909673a">source</a>
     </tr>
 </table>
+
+### In-house data:
+In-house data will be available soon.
 
 
 ## Installation:

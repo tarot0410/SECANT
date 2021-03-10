@@ -40,7 +40,7 @@ It is very important to first search for the best configuration before running S
 
 # Datasets
 
-A collection of datasets are available with SECANT. All the data are pre-processing by scVI. 
+A collection of datasets are available with SECANT. All the data are pre-processing by [scVI](https://docs.scvi-tools.org/en/stable/index.html). 
 
 ### Public data:
 <table>

@@ -60,7 +60,7 @@ A collection of datasets are available with SECANT. All datasets stored in this 
     <tr>
         <th>Dataset</th>
         <th>Number of cells</th>
-        <th>Dataset</th>
+        <th>Description</th>
         <th>Original data source</th>
     </tr>
     <tr>

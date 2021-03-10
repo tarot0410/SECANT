@@ -11,7 +11,7 @@ SECANT can be used to analyze CITE-seq data, or jointly analyze CITE-seq and scR
 
 Paper: will be released soon
 
-## Get Started
+# Get Started
 
 ### Analyzing CITE-seq data
 
@@ -38,7 +38,7 @@ Here we demonstrate how to joint analyze CITE-seq and scRNA-seq datasets with SE
 ### Search for best configuration
 It is very important to first search for the best configuration before running SECANT. Here is an example [SECANT_GitHub_Search_Best_Config.ipynb] (https://github.com/tarot0410/SECANT/blob/main/example/SECANT_GitHub_Search_Best_Config.ipynbb)
 
-## Datasets
+# Datasets
 
 A collection of datasets are available with SECANT. All the data are pre-processing by scVI. 
 
@@ -88,7 +88,7 @@ A collection of datasets are available with SECANT. All the data are pre-process
 In-house data will be available soon.
 
 
-## Installation:
+# Installation:
 
 ### From source
 

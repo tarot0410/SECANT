@@ -1,7 +1,5 @@
 # SECANT (Beta)
 
-Paper: **Wang X**, Xu Z, Zhou X, Zhang Y, Huang H, Ding Y, Duerr RH, Chen W. SECANT: a biology-guided semi-supervised method for clustering, classification, and annotation of single-cell multi-omics. [bioRxiv](https://www.biorxiv.org/content/10.1101/2020.11.06.371849v1). 2020 Jan 1.
-
 SECANT is a biology-guided SEmi-supervised method for Clustering, classification, and ANnoTation of single-cell multi-omics. 
 
 SECANT can be used to analyze CITE-seq data, or jointly analyze CITE-seq and scRNA-seq data. The novelties of SECANT include: 
@@ -116,3 +114,5 @@ Download a local copy of SECANT and install from the directory:
 ### Dependencies
 
 Torch, sklearn, umap, pandas, numpy and all of their respective dependencies. 
+
+Paper: **Wang X**, Xu Z, Zhou X, Zhang Y, Huang H, Ding Y, Duerr RH, Chen W. SECANT: a biology-guided semi-supervised method for clustering, classification, and annotation of single-cell multi-omics. [bioRxiv](https://www.biorxiv.org/content/10.1101/2020.11.06.371849v1). 2020 Jan 1.

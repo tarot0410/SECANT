@@ -1,13 +1,17 @@
-# SECANT (Beta, a more detailed version along with paper will come soon)
+# SECANT (Beta)
 
 SECANT is a biology-guided SEmi-supervised method for Clustering, classification, and ANnoTation of single-cell multi-omics. 
 
-SECANT can be used to analyze CITE-seq data, or jointly analyze CITE-seq and scRNA-seq data. The novelties of SECANT include 
-- 1) using confident cell type labels identified from surface protein data as guidance for cell clustering
+SECANT can be used to analyze CITE-seq data, or jointly analyze CITE-seq and scRNA-seq data. The novelties of SECANT include: 
+- 1) using confident cell type labels classified from surface protein data through gating as guidance for cell clustering with RNA data
 - 2) providing general annotation of confident cell types for each cell cluster 
 - 3) fully utilizing cells with uncertain or missing cell type labels to increase performance
 - 4) accurate prediction of confident cell types identified from surface protein data for scRNA-seq data
 
+In general, the input of SECANT include:
+- 1) ADT confident cell type labels L, where L ranges from 0 to C. Each unique value refers to one confident cell type, such as B cells, Monocytes. The maximum value C indicates uncertain cell type (e.g., cells on the boundary of different cell types in a gating plot)
+- 2) RNA data after dimension reduction (e.g., scVI or PCA)
+- 3) Optional (for the purpose of jointly analyzing CITE-seq and scRNA-seq data): RNA data after dimension reduction and batch effect correction
 
 Paper: will be released soon
 
@@ -15,7 +19,7 @@ Paper: will be released soon
 
 ### Analyzing CITE-seq data
 
-Here, we demonstrate this functionality with an PBMC10k data, a bone marrow data and a lung data. The same pipeline would generally be used to analyze any CITE-seq dataset. 
+Here, we demonstrate this functionality with public human PBMC data, bone marrow data and upper lobe lung data. The same pipeline would generally be used to analyze any CITE-seq dataset. 
 - PBMC10k: [SECANT_GitHub_10X10k_PBMC.ipynb](https://github.com/tarot0410/SECANT/blob/main/example/SECANT_GitHub_10X10k_PBMC.ipynb)	<a href="https://colab.research.google.com/drive/10FN1b_og_Sb3InUgrtjpwOl7YBLsPk7t?usp=sharing">
   	<img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 	</a>
@@ -28,19 +32,19 @@ Here, we demonstrate this functionality with an PBMC10k data, a bone marrow data
   	<img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 	</a>
 
-### Joint analyzing CITE-seq and scRNA-seq data
-Here we demonstrate how to joint analyze CITE-seq and scRNA-seq datasets with SECANT using two CITE-seq datasets of peripheral blood mononuclear cells from 10x Genomics. We use the whole 10k dataset while we hold-out the proteins of the 5k dataset. We will store the original values to validate our results.
+### Jointly analyzing CITE-seq and scRNA-seq data
+Here we demonstrate how to jointly analyze CITE-seq and scRNA-seq datasets with SECANT using two public PBMC CITE-seq datasets from 10x Genomics, namely 10X10k and 10X5k. We use the entire 10X10k dataset (i.e., both ADT and RNA) while we hold-out the ADT data of the 10X5k dataset to mimic scRNA-seq. We will store the original values to validate our results.
 
 [SECANT_GitHub_Joint_10X.ipynb](https://github.com/tarot0410/SECANT/blob/main/example/SECANT_GitHub_Joint_10X.ipynb)<a href="https://colab.research.google.com/drive/1J8pZUVEApu7shqzFPweCchCvZt8tHR52?usp=sharing">
   	<img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 	</a>
 
-### Search for best configuration
-It is very important to first search for the best configuration before running SECANT. Here is an example [SECANT_GitHub_Search_Best_Config.ipynb](https://github.com/tarot0410/SECANT/blob/main/example/SECANT_GitHub_Search_Best_Config.ipynb)
+### Search for the best configuration of concordance matrix in a data-driven manner
+Due to computational burden, we suggest running this step in parallel on a server with multiple CPUs or GPUs. Here is an example [SECANT_GitHub_Search_Best_Config.ipynb](https://github.com/tarot0410/SECANT/blob/main/example/SECANT_GitHub_Search_Best_Config.ipynb)
 
 # Datasets
 
-A collection of datasets are available with SECANT. All the data are pre-processing by [scVI](https://docs.scvi-tools.org/en/stable/index.html). 
+A collection of datasets are available with SECANT. All datasets stored in this repository are pre-processed by [scVI](https://docs.scvi-tools.org/en/stable/index.html). 
 
 ### Public data:
 <table>
@@ -48,37 +52,37 @@ A collection of datasets are available with SECANT. All the data are pre-process
         <th>Dataset</th>
         <th>Size</th>
         <th>Dataset</th>
-        <th>Original Data source</th>
+        <th>Original data source</th>
     </tr>
     <tr>
-        <td>10X10k</td>
-        <td>7xxx</td>
+        <td>10X10k_PBMC</td>
+        <td>7865</td>
         <td>
-        Peripheral blood mononuclear cells publicly available from 10X Genomics 
+        Human PBMCs (from *10X Genomics*) 
         </td>
         <td><a href="https://support.10xgenomics.com/single-cell-gene-expression/datasets/3.0.0/pbmc_10k_protein_v3">source</a>
     </tr>
     <tr>
-        <td>10X5k</td>
-        <td>4xxx</td>
+        <td>10X5k_PBMC</td>
+        <td>5527</td>
         <td>
-        Peripheral blood mononuclear cells publicly available from 10X Genomics 
+        Human PBMCs (from *10X Genomics*)
         </td>
         <td><a href="https://support.10xgenomics.com/single-cell-gene-expression/datasets/3.0.2/5k_pbmc_v3_nextgem">source</a>
     </tr>
     <tr>
-        <td>bone marrow</td>
-        <td>xxx</td>
+        <td>Bone_marrow</td>
+        <td>10000</td>
         <td>
-        Bone marrow data
+        Human bone marrow (originaly in Seurat package with >30000 cells, downsample to 10000 cells)
         </td>
         <td><a href="https://satijalab.org/seurat/articles/weighted_nearest_neighbor_analysis.html">source</a>
     </tr>
     <tr>
-        <td>lung</td>
-        <td>xxxx</td>
+        <td>Upper_lobe_lung</td>
+        <td>5451</td>
         <td>
-        lung
+        Human upper lobe lung (on GEO, use *DropletUtils* for pre-processing)
         </td>
         <td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM3909673a">source</a>
     </tr>
@@ -100,63 +104,4 @@ Download a local copy of SECANT and install from the directory:
 
 ### Dependencies
 
-Torch, sklearn, umap and all of their respective dependencies. 
-
-## Function: SECANT_CITE
-
-SECANT_CITE is used for surface protein-guided cell clustering and cluster annotation for CITE-seq data.
-
-### Usage
-SECANT_CITE(data0, numCluster, K, cls_np, uncertain = True, learning_rate=0.01, nIter=100, init_seed=2020)
-
-### Arguments
-* *data0* :	tensor of the RNA data from CITE-seq.
-* *numCluster* :	a list of number of clusters for each confidence cell type.
-* *K* : total number of clusters. 
-* *cls_np* :	a numpy array of confident cell type labels built from ADT data. Each value is expected to be an integer, where the last category refers to the "uncertain" type if used.
-* *uncertain* :	whether the uncertain cell type is shown in *cls_np*, the default is true.
-* *learning_rate* :	the learning rate for SGD, the default is 0.01 
-* *nIter* :	the max iteration for optimazation, the default is 100.
-* *init_seed* :	the initial seed.
-
-
-### Values
-* *outLbl00* : the final cluster label
-* *conMtxFinal0* : the concordance matrix
-* *tauVecFinal0* : the proportion of each cluster
-* *muMtxFinal0* : cluster-specific mean vector for the multivariste Guassian distribution
-* *cov3DFinal0* : cluster-specific covaraince matrix for the multivariate Guassian distribution
-* *loglikFinal0* : the final log-likelihood
-
-
-## Function: SECANT_joint
-
-SECANT_joint is used for surface protein-guided cell clustering, cluster annotation and confident cell type prediction for jointly analyzing CITE-seq and scRNA-seq data.
-
-### Usage
-SECANT_joint(data0, data1, numCluster, K, cls_np, uncertain = True, learning_rate=0.01, nIter=100, init_seed=2020)
-
-### Arguments
-* *data0* :	tensor of the RNA data from CITE-seq.
-* *data1* :	tensor of the RNA data from scRNA-seq.
-* *numCluster* :	a list of number of clusters for each confidence cell types.
-* *K* : total number of clusters. 
-* *cls_np* :	a numpy array of confident cell type labels built from ADT data (CITE-seq). Each value is expected to be an integer, where the last category refers to the "uncertain" type if used.
-* *uncertain* :	whether the uncertain cell type is shown in *cls_np*, the default is true.
-* *learning_rate* :	the learning rate for SGD, the default is 0.01 
-* *nIter* :	the max iteration for optimazation, the default is 100.
-* *init_seed* :	the initial seed.
-
-
-### Values
-* *outLbl01* : the final cluster label for CITE-seq data
-* *outLbl11* : the final cluster label for scRNA-seq data
-* *preditADTMtx* : the predicated ADT label for scRNA-seq data
-* *conMtxFinal1* : the concordance matrix
-* *tauVecFinal0_1* : the proportion of clusters in CITE-seq data
-* *tauVecFinal1_1* : the proportion of clusters in scRNA-seq data
-* *muMtxFinal1* : cluster-specific mean vector for the multivariste Guassian distribution
-* *cov3DFinal1* : cluster-specific covaraince matrix for the multivariate Guassian distribution
-* *loglikFinal1* : the final log-likelihood
-
-
+Torch, sklearn, umap, pandas, numpy and all of their respective dependencies. 

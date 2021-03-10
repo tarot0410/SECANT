@@ -50,39 +50,39 @@ A collection of datasets are available with SECANT. All datasets stored in this 
 <table>
     <tr>
         <th>Dataset</th>
-        <th>Size</th>
+        <th>Number of cells</th>
         <th>Dataset</th>
         <th>Original data source</th>
     </tr>
     <tr>
         <td>10X10k_PBMC</td>
-        <td>7865</td>
+        <td>7,865</td>
         <td>
-        Human PBMCs (from *10X Genomics*) 
+        Human PBMCs (from _10X Genomics_) 
         </td>
         <td><a href="https://support.10xgenomics.com/single-cell-gene-expression/datasets/3.0.0/pbmc_10k_protein_v3">source</a>
     </tr>
     <tr>
         <td>10X5k_PBMC</td>
-        <td>5527</td>
+        <td>5,527</td>
         <td>
-        Human PBMCs (from *10X Genomics*)
+        Human PBMCs (from _10X Genomics_)
         </td>
         <td><a href="https://support.10xgenomics.com/single-cell-gene-expression/datasets/3.0.2/5k_pbmc_v3_nextgem">source</a>
     </tr>
     <tr>
         <td>Bone_marrow</td>
-        <td>10000</td>
+        <td>10,000</td>
         <td>
-        Human bone marrow (originaly in Seurat package with >30000 cells, downsample to 10000 cells)
+        Human bone marrow (originaly in Seurat package with >30,000 cells, downsample to 10,000 cells)
         </td>
         <td><a href="https://satijalab.org/seurat/articles/weighted_nearest_neighbor_analysis.html">source</a>
     </tr>
     <tr>
         <td>Upper_lobe_lung</td>
-        <td>5451</td>
+        <td>5,451</td>
         <td>
-        Human upper lobe lung (on GEO, use *DropletUtils* for pre-processing)
+        Human upper lobe lung (on GEO, use _DropletUtils_ for pre-processing)
         </td>
         <td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM3909673a">source</a>
     </tr>

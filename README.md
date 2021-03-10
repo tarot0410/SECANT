@@ -15,7 +15,7 @@ In general, the input of SECANT include:
 - 2) RNA data after dimension reduction (e.g., scVI or PCA)
 - 3) Optional (for the purpose of jointly analyzing CITE-seq and scRNA-seq data): RNA data after dimension reduction and batch effect correction
 
-Paper: will be released soon
+Paper: **Wang X**, Xu Z, Zhou X, Zhang Y, Huang H, Ding Y, Duerr RH, Chen W. SECANT: a biology-guided semi-supervised method for clustering, classification, and annotation of single-cell multi-omics. [bioRxiv](https://www.biorxiv.org/content/10.1101/2020.11.06.371849v1). 2020 Jan 1.
 
 # Get Started
 

@@ -96,8 +96,10 @@ def fullLogLik1(data0, conMtx, wgt, muMtx, scale3D, cls, K, N):
     cls_long = cls.long()
     conMtxFull = conMtx[cls_long, :]
 
-    tempMtx = torch.mm(conMtxFull, torch.exp(log_posteriors))
-    temp = torch.trace(torch.clamp(tempMtx, min=1e-5).log())
+    log_post_exp = torch.exp(log_posteriors)
+    log_post_exp_tr = log_post_exp.t()
+    tempMtx = conMtxFull[:,None,:] @ log_post_exp_tr[:,:,None]
+    temp = torch.clamp(tempMtx, min=1e-5).log().sum()
     return temp + l1, log_posteriors.exp()
  
 # Set up optimization algorithm for one dataset case
@@ -221,9 +223,11 @@ def fullLogLik2(data0, data1, conMtx, wgt0, wgt1, muMtx, scale3D, cls, K, N0, N1
 
     cls_long = cls.long()
     conMtxFull = conMtx[cls_long, :]
-
-    tempMtx = torch.mm(conMtxFull, torch.exp(log_posteriors0))
-    temp = torch.trace(torch.clamp(tempMtx, min=1e-5).log())
+    
+    log_post_exp0 = torch.exp(log_posteriors0)
+    log_post_exp0_tr = log_post_exp0.t()
+    tempMtx = conMtxFull[:,None,:] @ log_post_exp0_tr[:,:,None]
+    temp = torch.clamp(tempMtx, min=1e-5).log().sum()
 
     # Part2: likelihood for data1
     log_likelihoods1 = get_likelihoods(data1, muMtx, scale3D, log=True)

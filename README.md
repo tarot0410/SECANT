@@ -85,7 +85,7 @@ A collection of datasets are available with SECANT. All datasets stored in this 
     </tr>
     <tr>
         <td>Bone_marrow</td>
-        <td>30,000</td>
+        <td>30,672</td>
         <td>
         Human bone marrow
         </td>

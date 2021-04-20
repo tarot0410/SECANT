@@ -85,6 +85,14 @@ A collection of datasets are available with SECANT. All datasets stored in this 
     </tr>
     <tr>
         <td>Bone_marrow</td>
+        <td>30,000</td>
+        <td>
+        Human bone marrow
+        </td>
+        <td><a href="https://satijalab.org/seurat/articles/weighted_nearest_neighbor_analysis.html">source</a>
+    </tr>
+    <tr>
+        <td>Bone_marrow_subset</td>
         <td>10,000</td>
         <td>
         Human bone marrow (originaly in Seurat package with >30,000 cells, downsample to 10,000 cells)

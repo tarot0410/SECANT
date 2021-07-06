@@ -90,8 +90,7 @@ def initParam(data0, numCluster, C, K, P, cls, n_gmm_init, init_seed):
 def fullLogLik1(data0, conMtx, wgt, muMtx, scale3D, cls, K, N):
     log_likelihoods = get_likelihoods(data0, muMtx, scale3D, log=True)
     log_posteriors = get_posteriors(log_likelihoods, wgt)
-    ind = torch.argmax(log_posteriors, 0)
-    l1 = torch.sum(log_likelihoods[ind, range(log_likelihoods.size()[1])])
+    l1 = torch.logsumexp(log_likelihoods + wgt.log().view(K,1), dim=0, keepdim=True).sum()
 
     cls_long = cls.long()
     conMtxFull = conMtx[cls_long, :]
@@ -100,7 +99,7 @@ def fullLogLik1(data0, conMtx, wgt, muMtx, scale3D, cls, K, N):
     log_post_exp_tr = log_post_exp.t()
     tempMtx = conMtxFull[:,None,:] @ log_post_exp_tr[:,:,None]
     temp = torch.clamp(tempMtx, min=1e-5).log().sum()
-    return temp + l1, log_posteriors.exp()
+    return temp + l1
  
 # Set up optimization algorithm for one dataset case
 def optimDL1(parameters, data0, conMtx_temp, C, K, N, P, cls, learning_rate, maxIter, earlystop):
@@ -110,9 +109,8 @@ def optimDL1(parameters, data0, conMtx_temp, C, K, N, P, cls, learning_rate, max
     # optimizer = optim.Adamax(parameters, lr=learning_rate)
     
     tril_indices = torch.tril_indices(row=P, col=P, offset=0)
-    pVec, muMtx, lowtri_mtx = parameters
+    pVec, muMtx, lowtri_mtx, wgt = parameters
     logLikVec = np.zeros(maxIter)
-    wgt = torch.ones(K, dtype = torch.float32, device = device)/K
 
     for i in range(maxIter):
         optimizer.zero_grad()
@@ -122,17 +120,16 @@ def optimDL1(parameters, data0, conMtx_temp, C, K, N, P, cls, learning_rate, max
         conMtx_tran = torch.empty(C, K, dtype = torch.float32, device = device)
         conMtx_tran[0:(C-1),:] = conMtx_temp*pVec_tran
         conMtx_tran[C-1,:] = 1-pVec_tran
-
+        wgt_tran = dist.biject_to(dist.Multinomial.arg_constraints['probs'])(wgt)
         # set up transformed cov3D matrix
         scale3D = torch.zeros(K, P, P, dtype = torch.float32, device = device)
         scale3D[:, tril_indices[0], tril_indices[1]] = lowtri_mtx
         scale3D[:, range(P), range(P)] = abs(scale3D[:, range(P), range(P)])
         
         # Define loss function xMtx, piVec, alphaMtx, K
-        LL, z = fullLogLik1(data0, conMtx_tran, wgt, muMtx, scale3D, cls, K, N)
+        LL= fullLogLik1(data0, conMtx_tran, wgt_tran, muMtx, scale3D, cls, K, N)
         NLL = -LL
         logLikVec[i] = LL
-        wgt = (z.sum(1)/N).detach()
 
         if i % 50 == 0:
             # print(i, "th iter...")
@@ -144,7 +141,7 @@ def optimDL1(parameters, data0, conMtx_temp, C, K, N, P, cls, learning_rate, max
         NLL.backward()
         optimizer.step()
         
-    return conMtx_tran, wgt, muMtx, scale3D, logLikVec, -NLL
+    return conMtx_tran, wgt_tran, muMtx, scale3D, logLikVec, -NLL
 
 class output_CITE:
   def __init__(self, lbl, conMtxFinal, wgt_out, mu_out, scale3D_out, log_posteriors_final, logLikVec, logLik_final):
@@ -169,7 +166,7 @@ def SECANT_CITE(data0, numCluster, cls, uncertain = True, learning_rate=0.01, ma
         C = len(torch.unique(cls))
     else:
         C = len(torch.unique(cls))+1
-        
+    
     # concordance p vector
     p_init = torch.ones(K, dtype = torch.float32, device = device) *0.5
     pVec = dist.biject_to(dist.Binomial.arg_constraints['probs']).inv(p_init)
@@ -189,12 +186,15 @@ def SECANT_CITE(data0, numCluster, cls, uncertain = True, learning_rate=0.01, ma
     lowtri_mtx = cov3D_decomp[:, tril_indices[0], tril_indices[1]]
     
     muMtx = mu_init.to(device)
+    wgt_temp = torch.ones(K, dtype = torch.float32, device = device)/K
+    wgt = dist.biject_to(dist.Multinomial.arg_constraints['probs']).inv(wgt_temp)
     
     pVec.requires_grad = True
     muMtx.requires_grad = True
     lowtri_mtx.requires_grad = True
+    wgt.requires_grad = True
 
-    param = [pVec, muMtx, lowtri_mtx]
+    param = [pVec, muMtx, lowtri_mtx, wgt]
 
     conMtxFinal, wgt_out, mu_out, scale3D_out, logLikVec, logLik_final = optimDL1(param, data0, conMtx_temp, C, K, N, P, cls, learning_rate, maxIter, earlystop)
 
@@ -208,7 +208,6 @@ def SECANT_CITE(data0, numCluster, cls, uncertain = True, learning_rate=0.01, ma
     lbl_out = lbl.view(N)
     
     out = output_CITE(lbl_out, conMtxFinal, wgt_out, mu_out, scale3D_out, log_posteriors_final, logLikVec, logLik_final)
-
     return out
 
 # compute logLikelihood of observed data for two datasets, one with labels and the other doesn't case

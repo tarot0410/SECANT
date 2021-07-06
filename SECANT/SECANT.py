@@ -158,7 +158,7 @@ class output_CITE:
       
       
 # Final function to run algorithm for one dataset case
-def SECANT_CITE(data0, numCluster, cls, uncertain = True, learning_rate=0.01, maxIter=500, earlystop = 0.0001, n_gmm_init=5, init_seed=2020):
+def SECANT_CITE(data0, numCluster, cls, uncertain = True, learning_rate=0.01, maxIter=500, earlystop = 1e-5, n_gmm_init=5, init_seed=2020):
     torch.manual_seed(init_seed)
     
     N = data0.size()[0]
@@ -296,7 +296,7 @@ class output_JOINT:
       
       
 # Final function to run algorithm for jointly analyzing CITE-seq and scRNA-seq data
-def SECANT_JOINT(data0, data1, numCluster, cls, uncertain = True, learning_rate=0.01, maxIter=500, earlystop = 0.0001, n_gmm_init=5, init_seed=2020):
+def SECANT_JOINT(data0, data1, numCluster, cls, uncertain = True, learning_rate=0.01, maxIter=500, earlystop = 1e-5, n_gmm_init=5, init_seed=2020):
     torch.manual_seed(init_seed)
     
     N0 = data0.size()[0]

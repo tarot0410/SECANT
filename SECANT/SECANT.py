@@ -184,7 +184,7 @@ def SECANT_CITE(data0, numCluster, cls, uncertain = True, learning_rate=0.01, ma
     cov_diag_init = cov_diag_init.view(K,P,1)
     cov_int = temp1 * cov_diag_init
 
-    cov3D_decomp = torch.cholesky(cov_int)
+    cov3D_decomp = torch.linalg.cholesky(cov_int)
     lowtri_mtx = cov3D_decomp[:, tril_indices[0], tril_indices[1]]
     
     muMtx = mu_init.to(device)
@@ -324,7 +324,7 @@ def SECANT_JOINT(data0, data1, numCluster, cls, uncertain = True, learning_rate=
     cov_diag_init = cov_diag_init.view(K,P,1)
     cov_int = temp1 * cov_diag_init
 
-    cov3D_decomp = torch.cholesky(cov_int)
+    cov3D_decomp = torch.linalg.cholesky(cov_int)
     lowtri_mtx = cov3D_decomp[:, tril_indices[0], tril_indices[1]]
     
     muMtx = mu_init.clone()

@@ -119,7 +119,7 @@ Torch, sklearn, umap, pandas, numpy and all of their respective dependencies.
 # Other relevant material
 
 ### Example of using automatic gating tool to classify major cell types with CITE-seq data
-- FLOCK + LDA for PBMC data: [AutoGating.html](https://github.com/tarot0410/SECANT/blob/main/example/Automatic_Gating.html)
+- FLOCK + LDA for PBMC data: [AutoGating.html](https://htmlpreview.github.io/?https://github.com/tarot0410/SECANT/blob/main/example/Automatic_Gating.html)
 
 ### Clustering uncertainty used in downstream analysis 
 Here, we give an example of utilizing clustering uncertainty (through posterior probability) from SECANT for downstream analysis. Specifically, we remove cells with low confident clustering result in trajectory analysis for sensitivity analysis. 

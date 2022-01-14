@@ -123,5 +123,14 @@ Download a local copy of SECANT and install from the directory:
 
 Torch, sklearn, umap, pandas, numpy and all of their respective dependencies. 
 
+
+# Other relevant material
+
+### Example of using automatic gating tool to classify major cell types with CITE-seq data
+
+Here, we demonstrate this functionality with public human PBMC data, bone marrow data and upper lobe lung data. The same pipeline would generally be used to analyze any CITE-seq dataset. 
+- FLOCK + LDA for PBMC data: [AutoGating.html](https://github.com/tarot0410/SECANT/blob/main/example/Automatic_Gating.html)
+	
+
 # Paper
 **Wang X**, Xu Z, Zhou X, Zhang Y, Huang H, Ding Y, Duerr RH, Chen W. SECANT: a biology-guided semi-supervised method for clustering, classification, and annotation of single-cell multi-omics. [*bioRxiv*. 2020](https://www.biorxiv.org/content/10.1101/2020.11.06.371849v1)

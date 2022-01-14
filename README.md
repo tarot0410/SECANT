@@ -25,7 +25,7 @@ Here, we demonstrate this functionality with public human PBMC data, bone marrow
   	<img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 	</a>
 	
-- Bone marrow: [SECANT_GitHub_Bone_marrow_fullset.ipynb](https://github.com/tarot0410/SECANT/blob/main/example/SECANT_GitHub_Bone_marrow.ipynb)<a href="https://colab.research.google.com/drive/1azjJhj6DkE0SIJ65sNK8F8MuDxdaw0RD?usp=sharing">
+- Bone marrow: [SECANT_GitHub_Bone_marrow.ipynb](https://github.com/tarot0410/SECANT/blob/main/example/SECANT_GitHub_Bone_marrow.ipynb)<a href="https://colab.research.google.com/drive/1azjJhj6DkE0SIJ65sNK8F8MuDxdaw0RD?usp=sharing">
   	<img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 	</a>
 

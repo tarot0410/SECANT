@@ -123,7 +123,7 @@ Torch, sklearn, umap, pandas, numpy and all of their respective dependencies.
 
 ### Clustering uncertainty used in downstream analysis 
 Here, we give an example of utilizing clustering uncertainty (through posterior probability) from SECANT for downstream analysis. Specifically, we remove cells with low confident clustering result in trajectory analysis for sensitivity analysis. 
-- Trajectory analysis of CD8+ T cells: [Trajectory.html](https://github.com/tarot0410/SECANT/blob/main/example/Automatic_Gating.html)
+- Trajectory analysis of CD8+ T cells: [Trajectory.html](https://htmlpreview.github.io/?https://github.com/tarot0410/SECANT/blob/main/example/Trajectory_Inference.html)
 
 # Paper
 **Wang X**, Xu Z, Zhou X, Zhang Y, Huang H, Ding Y, Duerr RH, Chen W. SECANT: a biology-guided semi-supervised method for clustering, classification, and annotation of single-cell multi-omics. [*bioRxiv*. 2020](https://www.biorxiv.org/content/10.1101/2020.11.06.371849v1)

@@ -21,7 +21,7 @@ In general, the input of SECANT include:
 ### Analyzing CITE-seq data
 
 Here, we demonstrate this functionality with public human PBMC data, bone marrow data and upper lobe lung data. The same pipeline would generally be used to analyze any CITE-seq dataset. 
-- PBMC10k: [SECANT_GitHub_10X10k_PBMC.ipynb](https://github.com/tarot0410/SECANT/blob/main/example/SECANT_GitHub_10X10k_PBMC.ipynb)	<a href="[https://colab.research.google.com/drive/10FN1b_og_Sb3InUgrtjpwOl7YBLsPk7t?usp=sharing](https://colab.research.google.com/drive/1f1m6joYnhIgvHmdsKa1ICpDX_-_hWHVp?usp=sharing)">
+- PBMC10k: [SECANT_GitHub_10X10k_PBMC.ipynb](https://github.com/tarot0410/SECANT/blob/main/example/SECANT_GitHub_10X10k_PBMC.ipynb)	<a href="https://colab.research.google.com/drive/1f1m6joYnhIgvHmdsKa1ICpDX_-_hWHVp?usp=sharing">
   	<img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 	</a>
 	
